@@ -42,6 +42,11 @@ public:
 class MyCMC : public CmcAdapter
 {
 public:
+	MyCMC(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
+	{
+
+	}
+
 	HOST_ID connToStigmergy()
 	{
 		return (0);
@@ -57,7 +62,8 @@ public:
 int main()
 {
 	MyIFAListener *listener = new MyIFAListener();
-	MyCMC *cmc = new MyCMC();
+	CmcAdapter::CmcCallbackListener *cmcCL = new CmcAdapter::CmcCallbackListener();
+	MyCMC *cmc = new MyCMC(cmcCL);
 
 	InterfaceAppAPI ifa(listener, *cmc);
 
