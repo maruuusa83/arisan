@@ -27,6 +27,8 @@ using std::endl;
 
 using marusa::swms::InterfaceAppAPI;
 using marusa::swms::JOB_ID;
+using marusa::swms::HOST_ID;
+using marusa::swms::CmcAdapter;
 
 class MyIFAListener : public InterfaceAppAPI::IFACallbackListener
 {
@@ -37,12 +39,27 @@ public:
 	}
 };
 
+class MyCMC : public CmcAdapter
+{
+public:
+	HOST_ID connToStigmergy()
+	{
+		return (0);
+	}
+
+	int startListen()
+	{
+		return (0);
+	}
+};
+
 
 int main()
 {
 	MyIFAListener *listener = new MyIFAListener();
+	MyCMC *cmc = new MyCMC();
 
-	//InterfaceAppAPI ifa(listener, cmc);
+	InterfaceAppAPI ifa(listener, *cmc);
 
 	return (0);
 }

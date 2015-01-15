@@ -60,7 +60,7 @@ OBJS = $(SRC:.cpp=.o)
 #-------------------------------------------------------------------
 # primary target
 .PHONY: all
-all: make_subdir depend gen_ofile gen_olist gen_aolist $(STIGMAGY) $(WORKER) $(IFA)
+all: make_subdir depend gen_ofile gen_olist gen_aolist $(IFA)
 
 $(STIGMAGY): $(shell cat allobj.lst)
 	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(WORKER))
@@ -69,7 +69,7 @@ $(WORKER): $(shell cat allobj.lst)
 	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(STIGMAGY))
 	
 $(IFA): $(shell cat allobj.lst)
-	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(IFA))
+	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(IFA)) $(shell cat allobj.lst |grep $(IFA))
 
 
 .PHONY: make_subdir
