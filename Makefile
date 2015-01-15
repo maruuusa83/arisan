@@ -42,7 +42,7 @@ CC = g++
 #-------------------------------------------------------------------
 # Compile Option
 #-------------------------------------------------------------------
-INCDIR = ./includes/
+INCDIR = ./swms/includes/
 CFLAGS = -Wall -O0 -g -pthread -std=c++11 -I $(INCDIR)
 
 #-------------------------------------------------------------------
@@ -60,7 +60,7 @@ OBJS = $(SRC:.cpp=.o)
 #-------------------------------------------------------------------
 # primary target
 .PHONY: all
-all: make_subdir depend gen_ofile gen_olist gen_aolist $(IFA)
+all: make_subdir depend gen_ofile gen_olist gen_aolist
 
 $(STIGMAGY): $(shell cat allobj.lst)
 	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(WORKER))

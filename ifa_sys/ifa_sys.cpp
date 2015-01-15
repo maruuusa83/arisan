@@ -49,11 +49,15 @@ public:
 
 	HOST_ID connToStigmergy()
 	{
+		cout << "in MyCMC::connToStigmergy" << endl;
+
 		return (0);
 	}
 
 	int startListen()
 	{
+		cout << "in MyCMC::startListen" << endl;
+
 		return (0);
 	}
 };
@@ -65,7 +69,8 @@ int main()
 	CmcAdapter::CmcCallbackListener *cmcCL = new CmcAdapter::CmcCallbackListener();
 	MyCMC *cmc = new MyCMC(cmcCL);
 
-	InterfaceAppAPI ifa(listener, *cmc);
+	InterfaceAppAPI ifa(listener, cmc);
 
 	return (0);
 }
+
