@@ -47,6 +47,7 @@ public:
 	{
 		cout << "in MyCMC::startListen" << endl;
 
+		cout << "out MyCMC::startListen" << endl;
 		return (0);
 	}
 };

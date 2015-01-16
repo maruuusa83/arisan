@@ -18,7 +18,7 @@
 #include <iostream>
 
 #include "common.h"
-#include "InterfaceAppAPI.h"
+#include "Stigmergy.h"
 
 #include "CmcAdapter.h"
 
@@ -27,26 +27,16 @@
 using std::cout;
 using std::endl;
 
-using marusa::swms::InterfaceAppAPI;
-using marusa::swms::JOB_ID;
-using marusa::swms::HOST_ID;
-
-class MyIFAListener : public InterfaceAppAPI::IFACallbackListener
-{
-public:
-	void onRecvJobId(const InterfaceAppAPI::IFAContext &context,
-					 const JOB_ID &job_id){
-		cout << "MyIFAListener::onRecvJobId : job_id = " << job_id << endl;
-	}
-};
+using marusa::swms::Stigmergy;
+using marusa::swms::CmcAdapter;
 
 int main()
 {
-	MyIFAListener *listener = new MyIFAListener();
 	CmcAdapter::CmcCallbackListener *cmcCL = new CmcAdapter::CmcCallbackListener();
 	MyCMC *cmc = new MyCMC(cmcCL);
 
-	InterfaceAppAPI ifa(listener, cmc);
+	Stigmergy sgy(cmc);
+	sgy.startStigmergy();
 
 	return (0);
 }
