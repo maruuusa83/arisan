@@ -27,27 +27,27 @@ using marusa::swms::CmcAdapter;
 using marusa::swms::JOB_ID;
 using marusa::swms::HOST_ID;
 
-class MyCMC : public CmcAdapter
+class MyCmc : public CmcAdapter
 {
 public:
-	MyCMC(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
+	MyCmc(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
 	{
 
 	}
 
 	HOST_ID connToStigmergy()
 	{
-		cout << "in MyCMC::connToStigmergy" << endl;
+		cout << "in MyCmc::connToStigmergy" << endl;
 
-		cout << "out MyCMC::connToStigmergy" << endl;
+		cout << "out MyCmc::connToStigmergy" << endl;
 		return (0);
 	}
 
 	int startListen()
 	{
-		cout << "in MyCMC::startListen" << endl;
+		cout << "in MyCmc::startListen" << endl;
 
-		cout << "out MyCMC::startListen" << endl;
+		cout << "out MyCmc::startListen" << endl;
 		return (0);
 	}
 };

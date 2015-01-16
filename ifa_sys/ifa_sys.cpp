@@ -44,7 +44,7 @@ int main()
 {
 	MyIFAListener *listener = new MyIFAListener();
 	CmcAdapter::CmcCallbackListener *cmcCL = new CmcAdapter::CmcCallbackListener();
-	MyCMC *cmc = new MyCMC(cmcCL);
+	MyCmc *cmc = new MyCmc(cmcCL);
 
 	InterfaceAppAPI ifa(listener, cmc);
 

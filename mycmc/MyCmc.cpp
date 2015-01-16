@@ -15,29 +15,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *******************************************************************************/
-#include <iostream>
+#include "./MyCmc.h"
 
-#include "common.h"
-#include "Stigmergy.h"
-
-#include "CmcAdapter.h"
-
-#include "../mycmc/MyCmc.h"
-
-using std::cout;
-using std::endl;
-
-using marusa::swms::Stigmergy;
-using marusa::swms::CmcAdapter;
-
-int main()
+MyCmc::MyCmc(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
 {
-	CmcAdapter::CmcCallbackListener *cmcCL = new CmcAdapter::CmcCallbackListener();
-	MyCmc *cmc = new MyCmc(cmcCL);
 
-	Stigmergy sgy(cmc);
-	sgy.startStigmergy();
+}
 
+HOST_ID MyCmc::connToStigmergy()
+{
+	cout << "in MyCmc::connToStigmergy" << endl;
+
+	cout << "out MyCmc::connToStigmergy" << endl;
+	return (0);
+}
+
+int MyCmc::startListen()
+{
+	cout << "in MyCmc::startListen" << endl;
+
+	cout << "out MyCmc::startListen" << endl;
 	return (0);
 }
 
