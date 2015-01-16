@@ -45,6 +45,15 @@ int MyCmc::startListen()
 {
 	cout << "in MyCmc::startListen" << endl;
 
+	if (this->mSv == nullptr){
+		int port_no;
+
+		getPort(port_no);
+		this->mSv = new TCPServer(port_no);
+	}
+
+	(this->mSv)->start_listening();
+
 	cout << "out MyCmc::startListen" << endl;
 	return (0);
 }
@@ -52,6 +61,13 @@ int MyCmc::startListen()
 int MyCmc::getStyPos(std::string &ip, int &port)
 {
 	ip = "127.0.0.1";
+	getPort(port);
+
+	return (0);
+}
+
+int MyCmc::getPort(int &port)
+{
 	port = 1234;
 
 	return (0);

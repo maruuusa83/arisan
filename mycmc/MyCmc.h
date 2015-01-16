@@ -47,5 +47,6 @@ private:
 	TCPServer *mSv = nullptr;
 
 	int getStyPos(std::string &ip, int &port);
+	int getPort(int &port);
 };
 
