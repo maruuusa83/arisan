@@ -16,39 +16,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *******************************************************************************/
 #include <iostream>
+#include <string>
 
 #include "common.h"
 #include "CmcAdapter.h"
+
+#include "../tcp/TCPClient.h"
+#include "../tcp/TCPServer.h"
 
 using std::cout;
 using std::endl;
 
 using marusa::swms::CmcAdapter;
-using marusa::swms::JOB_ID;
 using marusa::swms::HOST_ID;
+
+using marusalib::tcp::TCPClient;
+using marusalib::tcp::TCPServer;
 
 class MyCmc : public CmcAdapter
 {
 public:
-	MyCmc(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
-	{
+	MyCmc(CmcAdapter::CmcCallbackListener *listener);
 
-	}
+	HOST_ID connToStigmergy();
 
-	HOST_ID connToStigmergy()
-	{
-		cout << "in MyCmc::connToStigmergy" << endl;
+	int startListen();
 
-		cout << "out MyCmc::connToStigmergy" << endl;
-		return (0);
-	}
+private:
+	TCPClient *mCl = nullptr;
+	TCPServer *mSv = nullptr;
 
-	int startListen()
-	{
-		cout << "in MyCmc::startListen" << endl;
-
-		cout << "out MyCmc::startListen" << endl;
-		return (0);
-	}
+	int getStyPos(std::string &ip, int &port);
 };
 

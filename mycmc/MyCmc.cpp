@@ -26,8 +26,19 @@ HOST_ID MyCmc::connToStigmergy()
 {
 	cout << "in MyCmc::connToStigmergy" << endl;
 
+	if (this->mCl == nullptr){
+		std::string ip_str;
+		int port_no;
+
+		getStyPos(ip_str, port_no);
+		this->mCl = new TCPClient(inet_addr(ip_str.c_str()), port_no);
+	}
+
+	(this->mCl)->est_conn();
+	HOST_ID hid = (this->mCl)->get_socket();
+
 	cout << "out MyCmc::connToStigmergy" << endl;
-	return (0);
+	return (hid);
 }
 
 int MyCmc::startListen()
@@ -38,3 +49,10 @@ int MyCmc::startListen()
 	return (0);
 }
 
+int MyCmc::getStyPos(std::string &ip, int &port)
+{
+	ip = "127.0.0.1";
+	port = 1234;
+
+	return (0);
+}
