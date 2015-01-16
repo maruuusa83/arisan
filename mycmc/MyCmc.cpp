@@ -15,39 +15,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *******************************************************************************/
-#include <iostream>
+#include "./MyCmc.h"
 
-#include "common.h"
-#include "InterfaceAppAPI.h"
-
-#include "CmcAdapter.h"
-
-#include "../mycmc/MyCmc.h"
-
-using std::cout;
-using std::endl;
-
-using marusa::swms::InterfaceAppAPI;
-using marusa::swms::JOB_ID;
-using marusa::swms::HOST_ID;
-
-class MyIFAListener : public InterfaceAppAPI::IFACallbackListener
+MyCmc::MyCmc(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
 {
-public:
-	void onRecvJobId(const InterfaceAppAPI::IFAContext &context,
-					 const JOB_ID &job_id){
-		cout << "MyIFAListener::onRecvJobId : job_id = " << job_id << endl;
-	}
-};
 
-int main()
+}
+
+HOST_ID MyCmc::connToStigmergy()
 {
-	MyIFAListener *listener = new MyIFAListener();
-	CmcAdapter::CmcCallbackListener *cmcCL = new CmcAdapter::CmcCallbackListener();
-	MyCmc *cmc = new MyCmc(cmcCL);
+	cout << "in MyCmc::connToStigmergy" << endl;
 
-	InterfaceAppAPI ifa(listener, cmc);
+	cout << "out MyCmc::connToStigmergy" << endl;
+	return (0);
+}
 
+int MyCmc::startListen()
+{
+	cout << "in MyCmc::startListen" << endl;
+
+	cout << "out MyCmc::startListen" << endl;
 	return (0);
 }
 
