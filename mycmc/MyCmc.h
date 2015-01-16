@@ -18,37 +18,36 @@
 #include <iostream>
 
 #include "common.h"
-#include "InterfaceAppAPI.h"
-
 #include "CmcAdapter.h"
-
-#include "../mycmc/MyCmc.h"
 
 using std::cout;
 using std::endl;
 
-using marusa::swms::InterfaceAppAPI;
+using marusa::swms::CmcAdapter;
 using marusa::swms::JOB_ID;
 using marusa::swms::HOST_ID;
-using marusa::swms::CmcAdapter;
 
-class MyIFAListener : public InterfaceAppAPI::IFACallbackListener
+class MyCMC : public CmcAdapter
 {
 public:
-	void onRecvJobId(const InterfaceAppAPI::IFAContext &context,
-					 const JOB_ID &job_id){
-		cout << "MyIFAListener::onRecvJobId : job_id = " << job_id << endl;
+	MyCMC(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
+	{
+
+	}
+
+	HOST_ID connToStigmergy()
+	{
+		cout << "in MyCMC::connToStigmergy" << endl;
+
+		cout << "out MyCMC::connToStigmergy" << endl;
+		return (0);
+	}
+
+	int startListen()
+	{
+		cout << "in MyCMC::startListen" << endl;
+
+		return (0);
 	}
 };
-
-int main()
-{
-	MyIFAListener *listener = new MyIFAListener();
-	CmcAdapter::CmcCallbackListener *cmcCL = new CmcAdapter::CmcCallbackListener();
-	MyCMC *cmc = new MyCMC(cmcCL);
-
-	InterfaceAppAPI ifa(listener, cmc);
-
-	return (0);
-}
 
