@@ -63,13 +63,13 @@ OBJS = $(SRC:.cpp=.o)
 all: make_subdir depend gen_ofile gen_olist gen_aolist
 
 $(STIGMAGY): $(shell cat allobj.lst)
-	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(STIGMAGY))
+	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(WORKER) |grep -v $(IFA))
 
 $(WORKER): $(shell cat allobj.lst)
-	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(WORKER))
+	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(STIGMAGY) |grep -v $(IFA))
 	
 $(IFA): $(shell cat allobj.lst)
-	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(IFA)) $(shell cat allobj.lst |grep $(IFA))
+	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(WORKER) |grep -v $(STIGMAGY))
 
 
 .PHONY: make_subdir
