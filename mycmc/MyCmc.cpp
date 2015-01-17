@@ -30,8 +30,6 @@ MyCmc::MyCmc(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
 
 HOST_ID MyCmc::connToStigmergy()
 {
-	cout << "in MyCmc::connToStigmergy" << endl;
-
 	if (this->mCl == nullptr){
 		std::string ip_str;
 		int port_no;
@@ -44,14 +42,11 @@ HOST_ID MyCmc::connToStigmergy()
 	(this->mCl)->est_conn();
 	HOST_ID hid = (this->mCl)->get_socket();
 
-	cout << "out MyCmc::connToStigmergy" << endl;
 	return (hid);
 }
 
 int MyCmc::startListen()
 {
-	cout << "in MyCmc::startListen" << endl;
-
 	if (this->mSv == nullptr){
 		int port_no;
 
@@ -62,7 +57,6 @@ int MyCmc::startListen()
 
 	(this->mSv)->start_listening();
 
-	cout << "out MyCmc::startListen" << endl;
 	return (0);
 }
 
@@ -101,9 +95,9 @@ int MyCmc::sendMessage(const HOST_ID &host_id,
 	if (this->mCl != nullptr){
 #ifdef ___DEBUG_TRANS_TASK_IFA2SGY___
 	std::cout << "MyCmc::sendMessage - send_msg of mCl will called" << std::endl;
-	printf("msg type : %d\n", *tmp);
-	printf("msg size : %d\n", *((int *)&tmp[MessagePkt::SIZE_MSG_TYPE]));
-	printf("msg dmp : %s\n", &tmp[MessagePkt::SIZE_MSG_TYPE + MessagePkt::SIZE_DATA_SIZE]);
+	printf("\tmsg type : %d\n", *tmp);
+	printf("\tmsg size : %d\n", *((int *)&tmp[MessagePkt::SIZE_MSG_TYPE]));
+	printf("\tmsg dmp : %s\n", &tmp[MessagePkt::SIZE_MSG_TYPE + MessagePkt::SIZE_DATA_SIZE]);
 #endif /* ___DEBUG_TRANS_TASK_IFA2SGY___ */
 
 		(this->mCl)->send_msg((MESSAGE *)tmp, size_msg_tmp);
