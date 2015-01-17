@@ -21,6 +21,7 @@
 #include "InterfaceAppAPI.h"
 
 #include "CmcAdapter.h"
+#include "Job.h"
 
 #include "../mycmc/MyCmc.h"
 
@@ -30,6 +31,9 @@ using std::endl;
 using marusa::swms::InterfaceAppAPI;
 using marusa::swms::JOB_ID;
 using marusa::swms::HOST_ID;
+using marusa::swms::BYTE;
+
+using marusa::swms::Job;
 
 class MyIFAListener : public InterfaceAppAPI::IFACallbackListener
 {
@@ -42,11 +46,23 @@ public:
 
 int main()
 {
+	/*** Initialize ***/
 	MyIFAListener *listener = new MyIFAListener();
 	CmcAdapter::CmcCallbackListener *cmcCL = new CmcAdapter::CmcCallbackListener();
 	MyCmc *cmc = new MyCmc(cmcCL);
 
+
+	/*** sending test data ***/
+	BYTE data[] = "This is test data";
+
+	Job::Task task;
+	task.setData(data, sizeof(data));
+
+	Job job;
+	job.addTask(task);
+
 	InterfaceAppAPI ifa(listener, cmc);
+	ifa.sendTasks(job);
 
 	return (0);
 }

@@ -23,15 +23,22 @@
 
 #include "../tcp/TCPClient.h"
 #include "../tcp/TCPServer.h"
+#include "../tcp/TCPSettings.h"
+#include "../tcp/TCPUtilities.h"
 
 using std::cout;
 using std::endl;
 
 using marusa::swms::CmcAdapter;
 using marusa::swms::HOST_ID;
+using marusa::swms::BYTE;
 
+using marusalib::tcp::MESSAGE;
 using marusalib::tcp::TCPClient;
 using marusalib::tcp::TCPServer;
+using marusalib::tcp::OnReplyRecvListener;
+using marusalib::tcp::RecvContext;
+
 
 class MyCmc : public CmcAdapter
 {
@@ -43,10 +50,28 @@ public:
 	int startListen();
 
 private:
+	class MyTCPListener;
+
 	TCPClient *mCl = nullptr;
 	TCPServer *mSv = nullptr;
+	MyTCPListener *myTCPListener = nullptr;
 
 	int getStyPos(std::string &ip, int &port);
 	int getPort(int &port);
+
+	int sendMessage(const HOST_ID &host_id,
+					const BYTE *msg,
+					const unsigned int &size_msg);
+};
+
+class MyCmc::MyTCPListener : public OnReplyRecvListener
+{
+public:
+	MyTCPListener(CmcAdapter::CmcCallbackListener *listener);
+
+	void onRecv(RecvContext *context, MESSAGE *msg);
+
+private:
+	CmcAdapter::CmcCallbackListener *mCmcCallbackListener = nullptr;
 };
 
