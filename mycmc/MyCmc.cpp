@@ -23,9 +23,14 @@
 using marusa::swms::MessagePkt;
 #endif /* ___DEBUG_TRANS_TASK_IFA2SGY___ */
 
-MyCmc::MyCmc(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
+[[gnu::deprecated("This context was deprecated. Use MyCmc::MyCmc(CmcContext *context, CmcCallbackListener *listener).")]]MyCmc::MyCmc(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
 {
 	myTCPListener = new MyTCPListener(listener);
+}
+
+MyCmc::MyCmc(CmcAdapter::CmcContext *context, CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
+{
+	myTCPListener = new MyTCPListener(context, listener);
 }
 
 HOST_ID MyCmc::connToStigmergy()
@@ -113,6 +118,12 @@ int MyCmc::sendMessage(const HOST_ID &host_id,
 MyCmc::MyTCPListener::MyTCPListener(CmcAdapter::CmcCallbackListener *listener)
 {
 	this->mCmcCallbackListener = listener;
+}
+
+MyCmc::MyTCPListener::MyTCPListener(CmcAdapter::CmcContext *context, CmcAdapter::CmcCallbackListener *listener)
+{
+	this->mCmcCallbackListener = listener;
+	this->mCmcContext = context;
 }
 
 void MyCmc::MyTCPListener::onRecv(RecvContext *context, MESSAGE *msg)
