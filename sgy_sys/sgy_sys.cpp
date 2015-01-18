@@ -42,14 +42,19 @@ public:
 	{
 		std::cout << "MySGYListener::onRecvJobId - come task" << std::endl;
 
-		mMapTasks[mNowTaskNum] = task;
+		mMapTasks[mNowTaskUID] = task;
+		mNowTaskUID++;
 	}
 
 private:
-	int mNowTaskNum = 0;
+	int mNowTaskUID = 0;
 
 	std::map<TASK_ID, const BYTE *> mMapTasks;
 	std::map<TASK_ID, const BYTE *> mMapResults;
+
+	int getTaskNum(){
+		return ((this->mMapTasks).size());
+	}
 };
 
 int main()
