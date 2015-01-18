@@ -21,6 +21,7 @@
 #include "InterfaceAppAPI.h"
 
 #include "CmcAdapter.h"
+#include "CmcContext.h"
 #include "Job.h"
 
 #include "../mycmc/MyCmc.h"
@@ -49,7 +50,10 @@ int main()
 	/*** Initialize ***/
 	MyIFAListener *listener = new MyIFAListener();
 	CmcAdapter::CmcCallbackListener *cmcCL = new CmcAdapter::CmcCallbackListener();
-	MyCmc *cmc = new MyCmc(cmcCL);
+
+	CmcAdapter::CmcContext *cmcContext = new CmcAdapter::CmcContext();
+	cmcContext->setIFACallbackListener(listener);
+	MyCmc *cmc = new MyCmc(cmcContext, cmcCL);
 
 
 	/*** sending test data ***/

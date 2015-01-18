@@ -21,6 +21,7 @@
 #include "Stigmergy.h"
 
 #include "CmcAdapter.h"
+#include "CmcContext.h"
 
 #include "../mycmc/MyCmc.h"
 
@@ -30,10 +31,24 @@ using std::endl;
 using marusa::swms::Stigmergy;
 using marusa::swms::CmcAdapter;
 
+class MySGYListener : public Stigmergy::SGYCallbackListener
+{
+public:
+	void onRecvTask(const Stigmergy::SGYContext &context,
+					const BYTE *task) const
+	{
+		std::cout << "MySGYListener::onRecvJobId - come task" << std::endl;
+	}
+};
+
 int main()
 {
+	MySGYListener *listener = new MySGYListener();
 	CmcAdapter::CmcCallbackListener *cmcCL = new CmcAdapter::CmcCallbackListener();
-	MyCmc *cmc = new MyCmc(cmcCL);
+
+	CmcAdapter::CmcContext *cmcContext = new CmcAdapter::CmcContext();
+	cmcContext->setSGYCallbackListener(listener);
+	MyCmc *cmc = new MyCmc(cmcContext, cmcCL);
 
 	Stigmergy sgy(cmc);
 	sgy.startStigmergy();
