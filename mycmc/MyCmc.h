@@ -16,39 +16,66 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *******************************************************************************/
 #include <iostream>
+#include <string>
 
 #include "common.h"
 #include "CmcAdapter.h"
+
+#include "../tcp/TCPClient.h"
+#include "../tcp/TCPServer.h"
+#include "../tcp/TCPSettings.h"
+#include "../tcp/TCPUtilities.h"
 
 using std::cout;
 using std::endl;
 
 using marusa::swms::CmcAdapter;
-using marusa::swms::JOB_ID;
 using marusa::swms::HOST_ID;
+using marusa::swms::BYTE;
+
+using marusalib::tcp::MESSAGE;
+using marusalib::tcp::TCPClient;
+using marusalib::tcp::TCPServer;
+using marusalib::tcp::OnReplyRecvListener;
+using marusalib::tcp::RecvContext;
+
 
 class MyCmc : public CmcAdapter
 {
 public:
-	MyCmc(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
-	{
+	MyCmc(CmcAdapter::CmcCallbackListener *listener);
+	MyCmc(CmcAdapter::CmcContext *context, CmcAdapter::CmcCallbackListener *listener);
 
-	}
+	HOST_ID connToStigmergy();
 
-	HOST_ID connToStigmergy()
-	{
-		cout << "in MyCmc::connToStigmergy" << endl;
+	int startListen();
 
-		cout << "out MyCmc::connToStigmergy" << endl;
-		return (0);
-	}
+private:
+	class MyTCPListener;
 
-	int startListen()
-	{
-		cout << "in MyCmc::startListen" << endl;
+	TCPClient *mCl = nullptr;
+	TCPServer *mSv = nullptr;
+	MyTCPListener *myTCPListener = nullptr;
 
-		cout << "out MyCmc::startListen" << endl;
-		return (0);
-	}
+	int getStyPos(std::string &ip, int &port);
+	int getPort(int &port);
+
+	int sendMessage(const HOST_ID &host_id,
+					const BYTE *msg,
+					const unsigned int &size_msg);
 };
+
+class MyCmc::MyTCPListener : public OnReplyRecvListener
+{
+public:
+	MyTCPListener(CmcAdapter::CmcCallbackListener *listener);
+	MyTCPListener(CmcAdapter::CmcContext *context, CmcAdapter::CmcCallbackListener *listener);
+
+	void onRecv(RecvContext *context, MESSAGE *msg);
+
+private:
+	CmcAdapter::CmcCallbackListener *mCmcCallbackListener = nullptr;
+	CmcAdapter::CmcContext *mCmcContext = nullptr;
+};
+
 
