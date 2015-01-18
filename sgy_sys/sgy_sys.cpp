@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *******************************************************************************/
 #include <iostream>
+#include <map>
 
 #include "common.h"
 #include "Stigmergy.h"
@@ -31,14 +32,24 @@ using std::endl;
 using marusa::swms::Stigmergy;
 using marusa::swms::CmcAdapter;
 
+using marusa::swms::TASK_ID;
+
 class MySGYListener : public Stigmergy::SGYCallbackListener
 {
 public:
 	void onRecvTask(const Stigmergy::SGYContext &context,
-					const BYTE *task) const
+					const BYTE *task)
 	{
 		std::cout << "MySGYListener::onRecvJobId - come task" << std::endl;
+
+		mMapTasks[mNowTaskNum] = task;
 	}
+
+private:
+	int mNowTaskNum = 0;
+
+	std::map<TASK_ID, const BYTE *> mMapTasks;
+	std::map<TASK_ID, const BYTE *> mMapResults;
 };
 
 int main()
