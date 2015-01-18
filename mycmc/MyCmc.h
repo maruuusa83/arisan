@@ -44,6 +44,7 @@ class MyCmc : public CmcAdapter
 {
 public:
 	MyCmc(CmcAdapter::CmcCallbackListener *listener);
+	MyCmc(CmcAdapter::CmcContext *context, CmcAdapter::CmcCallbackListener *listener);
 
 	HOST_ID connToStigmergy();
 
@@ -68,10 +69,13 @@ class MyCmc::MyTCPListener : public OnReplyRecvListener
 {
 public:
 	MyTCPListener(CmcAdapter::CmcCallbackListener *listener);
+	MyTCPListener(CmcAdapter::CmcContext *context, CmcAdapter::CmcCallbackListener *listener);
 
 	void onRecv(RecvContext *context, MESSAGE *msg);
 
 private:
 	CmcAdapter::CmcCallbackListener *mCmcCallbackListener = nullptr;
+	CmcAdapter::CmcContext *mCmcContext = nullptr;
 };
+
 
