@@ -24,6 +24,8 @@
 #include "CmcAdapter.h"
 #include "CmcContext.h"
 
+#include "MessagePkt.h"
+
 #include "../mycmc/MyCmc.h"
 
 using std::cout;
@@ -32,7 +34,11 @@ using std::endl;
 using marusa::swms::Stigmergy;
 using marusa::swms::CmcAdapter;
 
+using marusa::swms::bytecpy;
+
+using marusa::swms::JOB_ID;
 using marusa::swms::TASK_ID;
+using marusa::swms::TASK_PKT_HEADER;
 
 class MySGYListener : public Stigmergy::SGYCallbackListener
 {
@@ -42,15 +48,20 @@ public:
 	{
 		std::cout << "MySGYListener::onRecvJobId - come task" << std::endl;
 
-		mMapTasks[mNowTaskUID] = task;
-		mNowTaskUID++;
+		TASK_PKT_HEADER *task_pkt_header = (TASK_PKT_HEADER *)task;
+
+		std::pair<JOB_ID, HOST_ID> task_uid(task_pkt_header->job_id, task_pkt_header->task_id);
+		mMapTasks[task_uid] = (BYTE *)malloc(sizeof(BYTE) * task_pkt_header->data_size);
+		bytecpy((BYTE *)mMapTasks[task_uid], &task[sizeof(TASK_PKT_HEADER)], task_pkt_header->data_size);
+
+		printf("\tJOB ID\t: %d\n", task_pkt_header->job_id);
+		printf("\tTASK ID\t: %d\n", task_pkt_header->task_id);
+		printf("\tDATA SIZE\t: %d\n", task_pkt_header->task_id);
 	}
 
 private:
-	int mNowTaskUID = 0;
-
-	std::map<TASK_ID, const BYTE *> mMapTasks;
-	std::map<TASK_ID, const BYTE *> mMapResults;
+	std::map<std::pair<JOB_ID, HOST_ID>, const BYTE *> mMapTasks;
+	std::map<std::pair<JOB_ID, HOST_ID>, const BYTE *> mMapResults;
 
 	int getTaskNum(){
 		return ((this->mMapTasks).size());
