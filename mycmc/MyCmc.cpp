@@ -104,7 +104,7 @@ int MyCmc::sendMessage(const HOST_ID &host_id,
 		printf("\tmsg type : %d\n", *tmp);
 		printf("\tmsg size : %d\n", *((int *)&tmp[MessagePkt::SIZE_MSG_TYPE]));
 		printf("msg dmp\n");
-		printf("*********************************************************\n");
+		printf("**********************************************************\n");
 		printf("          ");
 		for (int i = 0; i < 0x10; i++){
 			printf("%02X ", i);
@@ -120,7 +120,7 @@ int MyCmc::sendMessage(const HOST_ID &host_id,
 			}
 		}
 		printf("\n");
-		printf("*********************************************************\n");
+		printf("**********************************************************\n");
 #endif /* ___DEBUG_PKT_DMP___ */
 #endif /* ___DEBUG_TRANS_TASK_IFA2SGY___ */
 
@@ -154,7 +154,7 @@ void MyCmc::MyTCPListener::onRecv(RecvContext *context, MESSAGE *msg)
 	printf("\tmsg type : %d\n", (BYTE)*msg);
 	printf("\tmsg size : %d\n", *((int *)&msg[MessagePkt::SIZE_MSG_TYPE]));
 	printf("msg dmp\n");
-	printf("*********************************************************\n");
+	printf("**********************************************************\n");
 	printf("          ");
 	for (int i = 0; i < 0x10; i++){
 		printf("%02X ", i);
@@ -170,7 +170,7 @@ void MyCmc::MyTCPListener::onRecv(RecvContext *context, MESSAGE *msg)
 		}
 	}
 	printf("\n");
-	printf("*********************************************************\n");
+	printf("**********************************************************\n");
 #endif /* ___DEBUG_PKT_DMP___ */
 #endif /* ___DEBUG_TRANS_TASK_IFA2SGY___ */
 
