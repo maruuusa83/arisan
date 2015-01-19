@@ -99,6 +99,7 @@ int MyCmc::sendMessage(const HOST_ID &host_id,
 
 	if (this->mCl != nullptr){
 #ifdef ___DEBUG_TRANS_TASK_IFA2SGY___
+#ifdef ___DEBUG_PKT_DMP___
 		std::cout << "MyCmc::sendMessage - send_msg of mCl will called" << std::endl;
 		printf("\tmsg type : %d\n", *tmp);
 		printf("\tmsg size : %d\n", *((int *)&tmp[MessagePkt::SIZE_MSG_TYPE]));
@@ -120,6 +121,7 @@ int MyCmc::sendMessage(const HOST_ID &host_id,
 		}
 		printf("\n");
 		printf("*********************************************************\n");
+#endif /* ___DEBUG_PKT_DMP___ */
 #endif /* ___DEBUG_TRANS_TASK_IFA2SGY___ */
 
 		(this->mCl)->send_msg((MESSAGE *)tmp, size_msg_tmp);
@@ -147,6 +149,7 @@ MyCmc::MyTCPListener::MyTCPListener(CmcAdapter::CmcContext *context, CmcAdapter:
 void MyCmc::MyTCPListener::onRecv(RecvContext *context, MESSAGE *msg)
 {
 #ifdef ___DEBUG_TRANS_TASK_IFA2SGY___
+#ifdef ___DEBUG_PKT_DMP___
 	std::cout << "MyCmc::MyTCPListener::onRecv - recieved message" << std::endl;
 	printf("\tmsg type : %d\n", (BYTE)*msg);
 	printf("\tmsg size : %d\n", *((int *)&msg[MessagePkt::SIZE_MSG_TYPE]));
@@ -168,6 +171,7 @@ void MyCmc::MyTCPListener::onRecv(RecvContext *context, MESSAGE *msg)
 	}
 	printf("\n");
 	printf("*********************************************************\n");
+#endif /* ___DEBUG_PKT_DMP___ */
 #endif /* ___DEBUG_TRANS_TASK_IFA2SGY___ */
 
 	MessagePkt msgPkt(context->conn_sock, (BYTE *)msg);
