@@ -56,7 +56,7 @@ public:
 
 		printf("\tJOB ID\t\t: %d\n", task_pkt_header->job_id);
 		printf("\tTASK ID\t\t: %d\n", task_pkt_header->task_id);
-		printf("\tDATA SIZE\t: %d\n", task_pkt_header->task_id);
+		printf("\tDATA SIZE\t: %d\n", task_pkt_header->data_size);
 	}
 
 private:
