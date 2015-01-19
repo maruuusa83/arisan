@@ -51,20 +51,21 @@ public:
 		TASK_PKT_HEADER *task_pkt_header = (TASK_PKT_HEADER *)task;
 
 		std::pair<JOB_ID, HOST_ID> task_uid(task_pkt_header->job_id, task_pkt_header->task_id);
-		mMapTasks[task_uid] = (BYTE *)malloc(sizeof(BYTE) * task_pkt_header->data_size);
-		bytecpy((BYTE *)mMapTasks[task_uid], &task[sizeof(TASK_PKT_HEADER)], task_pkt_header->data_size);
+		//mMapTasks[task_uid] = (BYTE *)malloc(sizeof(BYTE) * task_pkt_header->data_size);
+		//bytecpy((BYTE *)mMapTasks[task_uid], &task[sizeof(TASK_PKT_HEADER)], task_pkt_header->data_size);
+		context.mSGY->addTask(task_uid, &task[sizeof(TASK_PKT_HEADER)], task_pkt_header->data_size);
 
 		printf("\tJOB ID\t\t: %d\n", task_pkt_header->job_id);
 		printf("\tTASK ID\t\t: %d\n", task_pkt_header->task_id);
 		printf("\tDATA SIZE\t: %d\n", task_pkt_header->data_size);
 	}
 
-private:
-	std::map<std::pair<JOB_ID, HOST_ID>, const BYTE *> mMapTasks;
-	std::map<std::pair<JOB_ID, HOST_ID>, const BYTE *> mMapResults;
+	void onRecvReqTaskList(const Stigmergy::SGYContext &context,
+						   const HOST_ID &from)
+	{
+		std::cout << "MySGYListener::onRecvReqTaskList - come request task list" << std::endl;
 
-	int getTaskNum(){
-		return ((this->mMapTasks).size());
+		context.mSGY->sendTaskList(from);
 	}
 };
 

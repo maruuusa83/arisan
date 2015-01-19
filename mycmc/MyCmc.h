@@ -20,6 +20,8 @@
 
 #include "common.h"
 #include "CmcAdapter.h"
+#include "Stigmergy.h"
+#include "CmcContext.h"
 
 #include "../tcp/TCPClient.h"
 #include "../tcp/TCPServer.h"
@@ -32,6 +34,7 @@ using std::endl;
 using marusa::swms::CmcAdapter;
 using marusa::swms::HOST_ID;
 using marusa::swms::BYTE;
+using marusa::swms::Stigmergy;
 
 using marusalib::tcp::MESSAGE;
 using marusalib::tcp::TCPClient;
@@ -72,6 +75,8 @@ public:
 	MyTCPListener(CmcAdapter::CmcContext *context, CmcAdapter::CmcCallbackListener *listener);
 
 	void onRecv(RecvContext *context, MESSAGE *msg);
+
+	int setSGYContext(Stigmergy::SGYContext *context);
 
 private:
 	CmcAdapter::CmcCallbackListener *mCmcCallbackListener = nullptr;

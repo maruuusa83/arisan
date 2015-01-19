@@ -178,3 +178,10 @@ void MyCmc::MyTCPListener::onRecv(RecvContext *context, MESSAGE *msg)
 	(this->mCmcCallbackListener)->onMessage(*(this->mCmcContext), context->conn_sock, msgPkt);
 }
 
+int MyCmc::MyTCPListener::setSGYContext(Stigmergy::SGYContext *context)
+{
+	(this->mCmcContext)->setSGYContext(context);
+
+	return (0);
+}
+
