@@ -54,8 +54,8 @@ public:
 		mMapTasks[task_uid] = (BYTE *)malloc(sizeof(BYTE) * task_pkt_header->data_size);
 		bytecpy((BYTE *)mMapTasks[task_uid], &task[sizeof(TASK_PKT_HEADER)], task_pkt_header->data_size);
 
-		printf("\tJOB ID\t: %d\n", task_pkt_header->job_id);
-		printf("\tTASK ID\t: %d\n", task_pkt_header->task_id);
+		printf("\tJOB ID\t\t: %d\n", task_pkt_header->job_id);
+		printf("\tTASK ID\t\t: %d\n", task_pkt_header->task_id);
 		printf("\tDATA SIZE\t: %d\n", task_pkt_header->task_id);
 	}
 
