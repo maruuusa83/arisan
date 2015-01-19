@@ -79,6 +79,9 @@ int main()
 	MyCmc *cmc = new MyCmc(cmcContext, cmcCL);
 
 	Stigmergy sgy(cmc);
+	Stigmergy::SGYContext sgyContext(&sgy);
+	cmcContext->setSGYContext(&sgyContext);
+
 	sgy.startStigmergy();
 
 	return (0);
