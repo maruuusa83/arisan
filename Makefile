@@ -60,15 +60,18 @@ OBJS = $(SRC:.cpp=.o)
 #-------------------------------------------------------------------
 # primary target
 .PHONY: all
-all: make_subdir depend gen_ofile gen_olist gen_aolist
+all: make_subdir depend gen_ofile gen_olist gen_aolist sgy tp ifa
 
-$(STIGMAGY): $(shell cat allobj.lst)
+.PHONY: bld
+bld: make_subdir depend gen_ofile gen_olist gen_aolist
+
+sgy: $(shell cat allobj.lst)
 	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(WORKER) |grep -v $(IFA))
 
-$(WORKER): $(shell cat allobj.lst)
+tp:
 	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(STIGMAGY) |grep -v $(IFA))
 	
-$(IFA): $(shell cat allobj.lst)
+ifa:
 	$(CC) $(CFLAGS) -o $@.out $(shell cat allobj.lst |grep -v $(WORKER) |grep -v $(STIGMAGY))
 
 
