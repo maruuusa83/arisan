@@ -61,6 +61,9 @@ int main()
 	TaskProcessorAPI tp(listener, cmc);
 	TaskProcessorAPI::TPContext tpContext(&tp);
 	cmcContext->setTPContext(&tpContext);
+
+	tp.startWorker();
+
 	return (0);
 }
 
