@@ -24,6 +24,7 @@
 #include "CmcContext.h"
 
 #include "Job.h"
+#include "Result.h"
 
 #include "../mycmc/MyCmc.h"
 
@@ -33,6 +34,7 @@ using std::endl;
 using marusa::swms::TaskProcessorAPI;
 using marusa::swms::CmcAdapter;
 using marusa::swms::Job;
+using marusa::swms::Result;
 
 using marusa::swms::bytecpy;
 
@@ -47,6 +49,9 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 				const Job::Task &task)
 	{
 		cout << "MyTPListener::onTask - on task" << endl;
+
+		Result result(task.getJobId(), task.getTaskId(), nullptr, 0);
+		(context.taskProcessorAPI)->sendTaskFin(result);
 	}
 };
 
