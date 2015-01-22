@@ -99,10 +99,29 @@ int MyCmc::sendMessage(const HOST_ID &host_id,
 
 	if (this->mCl != nullptr){
 #ifdef ___DEBUG_TRANS_TASK_IFA2SGY___
+#ifdef ___DEBUG_PKT_DMP___
 		std::cout << "MyCmc::sendMessage - send_msg of mCl will called" << std::endl;
 		printf("\tmsg type : %d\n", *tmp);
 		printf("\tmsg size : %d\n", *((int *)&tmp[MessagePkt::SIZE_MSG_TYPE]));
-		printf("\tmsg dmp : %s\n", &tmp[MessagePkt::SIZE_MSG_TYPE + MessagePkt::SIZE_DATA_SIZE]);
+		printf("msg dmp\n");
+		printf("**********************************************************\n");
+		printf("          ");
+		for (int i = 0; i < 0x10; i++){
+			printf("%02X ", i);
+		}
+		printf("\n");
+		for (int i = 0; i < *((int *)&tmp[MessagePkt::SIZE_MSG_TYPE]); i++){
+			if (i % 0x10 == 0){
+				printf(" 0x%04X : ", i);
+			}
+			printf("%02X ", tmp[i]);
+			if (i % 0x10 == 0x0F){
+				printf("\n");
+			}
+		}
+		printf("\n");
+		printf("**********************************************************\n");
+#endif /* ___DEBUG_PKT_DMP___ */
 #endif /* ___DEBUG_TRANS_TASK_IFA2SGY___ */
 
 		(this->mCl)->send_msg((MESSAGE *)tmp, size_msg_tmp);
@@ -111,6 +130,7 @@ int MyCmc::sendMessage(const HOST_ID &host_id,
 		marusalib::tcp::utilities::send_msg(host_id, (MESSAGE *)tmp, size_msg_tmp);
 	}
 
+	free(tmp);
 	return (0);
 }
 
@@ -129,10 +149,39 @@ MyCmc::MyTCPListener::MyTCPListener(CmcAdapter::CmcContext *context, CmcAdapter:
 void MyCmc::MyTCPListener::onRecv(RecvContext *context, MESSAGE *msg)
 {
 #ifdef ___DEBUG_TRANS_TASK_IFA2SGY___
+#ifdef ___DEBUG_PKT_DMP___
 	std::cout << "MyCmc::MyTCPListener::onRecv - recieved message" << std::endl;
+	printf("\tmsg type : %d\n", (BYTE)*msg);
+	printf("\tmsg size : %d\n", *((int *)&msg[MessagePkt::SIZE_MSG_TYPE]));
+	printf("msg dmp\n");
+	printf("**********************************************************\n");
+	printf("          ");
+	for (int i = 0; i < 0x10; i++){
+		printf("%02X ", i);
+	}
+	printf("\n");
+	for (int i = 0; i < *((int *)&msg[MessagePkt::SIZE_MSG_TYPE]); i++){
+		if (i % 0x10 == 0){
+			printf(" 0x%04X : ", i);
+		}
+		printf("%02X ", msg[i]);
+		if (i % 0x10 == 0x0F){
+			printf("\n");
+		}
+	}
+	printf("\n");
+	printf("**********************************************************\n");
+#endif /* ___DEBUG_PKT_DMP___ */
 #endif /* ___DEBUG_TRANS_TASK_IFA2SGY___ */
 
 	MessagePkt msgPkt(context->conn_sock, (BYTE *)msg);
 	(this->mCmcCallbackListener)->onMessage(*(this->mCmcContext), context->conn_sock, msgPkt);
+}
+
+int MyCmc::MyTCPListener::setSGYContext(Stigmergy::SGYContext *context)
+{
+	(this->mCmcContext)->setSGYContext(context);
+
+	return (0);
 }
 

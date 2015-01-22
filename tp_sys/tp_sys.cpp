@@ -16,76 +16,61 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *******************************************************************************/
 #include <iostream>
-#include <unistd.h>
 
 #include "common.h"
-#include "InterfaceAppAPI.h"
+#include "TaskProcessorAPI.h"
 
 #include "CmcAdapter.h"
 #include "CmcContext.h"
+
 #include "Job.h"
+#include "Result.h"
 
 #include "../mycmc/MyCmc.h"
 
 using std::cout;
 using std::endl;
 
-using marusa::swms::InterfaceAppAPI;
+using marusa::swms::TaskProcessorAPI;
+using marusa::swms::CmcAdapter;
+using marusa::swms::Job;
+using marusa::swms::Result;
+
+using marusa::swms::bytecpy;
+
 using marusa::swms::JOB_ID;
 using marusa::swms::TASK_ID;
-using marusa::swms::HOST_ID;
-using marusa::swms::BYTE;
+using marusa::swms::TASK_PKT_HEADER;
 
-using marusa::swms::Job;
 
-class MyIFAListener : public InterfaceAppAPI::IFACallbackListener
+class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 {
-public:
-	void onRecvJobId(const InterfaceAppAPI::IFAContext &context,
-					 const JOB_ID &job_id){
-		cout << "MyIFAListener::onRecvJobId : job_id = " << job_id << endl;
-	}
-
-	void onRecvResultList(const InterfaceAppAPI::IFAContext &context,
-						  const std::vector<std::pair<JOB_ID, TASK_ID>> &results_info)
+	void onTask(const TaskProcessorAPI::TPContext &context,
+				const Job::Task &task)
 	{
-		cout << "MyIFAListener::onRecvResultList - result list :" << endl;
+		cout << "MyTPListener::onTask - on task" << endl;
 
-		for (auto info : results_info){
-			printf("\tJOB-%d TASK-%d\n", info.first, info.second);
-		}
+		Result result(task.getJobId(), task.getTaskId(), nullptr, 0);
+		(context.taskProcessorAPI)->sendTaskFin(result);
 	}
 };
 
 int main()
 {
-	/*** Initialize ***/
-	MyIFAListener *listener = new MyIFAListener();
-	CmcAdapter::CmcCallbackListener *cmcCL = new CmcAdapter::CmcCallbackListener();
+	MyTPListener *listener = new MyTPListener();
 
+	CmcAdapter::CmcCallbackListener *cmcCL = new CmcAdapter::CmcCallbackListener();
 	CmcAdapter::CmcContext *cmcContext = new CmcAdapter::CmcContext();
-	cmcContext->setIFACallbackListener(listener);
 	MyCmc *cmc = new MyCmc(cmcContext, cmcCL);
 
+	TaskProcessorAPI tp(listener, cmc);
+	TaskProcessorAPI::TPContext tpContext(&tp);
+	cmcContext->setTPContext(&tpContext);
+	cmcContext->setTPCallbackListener(listener);
 
-	/*** sending test data ***/
-	BYTE data[] = "This is test data";
-
-	Job::Task task;
-	task.setData(data, sizeof(data));
-
-	Job job;
-	job.addTask(task);
-
-	InterfaceAppAPI ifa(listener, cmc);
-	ifa.sendTasks(job);
-
-	while (1){
-		ifa.sendReqResultList();
-
-		sleep(5);
-	}
+	tp.startWorker();
 
 	return (0);
 }
+
 
