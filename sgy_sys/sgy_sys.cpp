@@ -78,6 +78,18 @@ public:
 		std::cout << "MySGYListener::onRecvTaskFin - come result" << std::endl;
 
 		(context.mSGY)->addResult(result);
+
+		// deleting task
+		std::pair<JOB_ID, TASK_ID> task_uid(result.getJobId(), result.getTaskId());
+		(context.mSGY)->delTask(task_uid);
+	}
+
+	void onRecvReqResultList(const Stigmergy::SGYContext &context,
+							 const HOST_ID &from)
+	{
+		std::cout << "MySGYListener::onRecvReqRequestList - come result list request" << std::endl;
+
+		(context.mSGY)->sendResultList(from);
 	}
 };
 
