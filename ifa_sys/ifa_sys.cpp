@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *******************************************************************************/
 #include <iostream>
+#include <unistd.h>
 
 #include "common.h"
 #include "InterfaceAppAPI.h"
@@ -31,6 +32,7 @@ using std::endl;
 
 using marusa::swms::InterfaceAppAPI;
 using marusa::swms::JOB_ID;
+using marusa::swms::TASK_ID;
 using marusa::swms::HOST_ID;
 using marusa::swms::BYTE;
 
@@ -42,6 +44,16 @@ public:
 	void onRecvJobId(const InterfaceAppAPI::IFAContext &context,
 					 const JOB_ID &job_id){
 		cout << "MyIFAListener::onRecvJobId : job_id = " << job_id << endl;
+	}
+
+	void onRecvResultList(const InterfaceAppAPI::IFAContext &context,
+						  const std::vector<std::pair<JOB_ID, TASK_ID>> &results_info)
+	{
+		cout << "MyIFAListener::onRecvResultList - result list :" << endl;
+
+		for (auto info : results_info){
+			printf("\tJOB-%d TASK-%d\n", info.first, info.second);
+		}
 	}
 };
 
@@ -67,6 +79,12 @@ int main()
 
 	InterfaceAppAPI ifa(listener, cmc);
 	ifa.sendTasks(job);
+
+	while (1){
+		ifa.sendReqResultList();
+
+		sleep(5);
+	}
 
 	return (0);
 }
