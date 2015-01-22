@@ -21,6 +21,8 @@
 #include "common.h"
 #include "Stigmergy.h"
 
+#include "Result.h"
+
 #include "CmcAdapter.h"
 #include "CmcContext.h"
 
@@ -33,6 +35,7 @@ using std::endl;
 
 using marusa::swms::Stigmergy;
 using marusa::swms::CmcAdapter;
+using marusa::swms::Result;
 
 using marusa::swms::bytecpy;
 
@@ -66,6 +69,27 @@ public:
 		std::cout << "MySGYListener::onRecvReqTaskList - come request task list" << std::endl;
 
 		context.mSGY->sendTaskList(from);
+	}
+
+	void onRecvTaskFin(const Stigmergy::SGYContext &context,
+					   const Result &result,
+					   const HOST_ID &from)
+	{
+		std::cout << "MySGYListener::onRecvTaskFin - come result" << std::endl;
+
+		(context.mSGY)->addResult(result);
+
+		// deleting task
+		std::pair<JOB_ID, TASK_ID> task_uid(result.getJobId(), result.getTaskId());
+		(context.mSGY)->delTask(task_uid);
+	}
+
+	void onRecvReqResultList(const Stigmergy::SGYContext &context,
+							 const HOST_ID &from)
+	{
+		std::cout << "MySGYListener::onRecvReqRequestList - come result list request" << std::endl;
+
+		(context.mSGY)->sendResultList(from);
 	}
 };
 
