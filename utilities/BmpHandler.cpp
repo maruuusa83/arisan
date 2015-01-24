@@ -20,6 +20,11 @@
 namespace marusa {
 namespace utilities {
 
+BmpHandler::BmpHandler()
+{
+
+}
+
 BmpHandler::BmpHandler(std::string pos)
 {
 	BmpFile *bmpFile = new BmpFile(pos);
@@ -143,7 +148,7 @@ void BmpHandler::read_bmp_body(BmpFile *bmpFile)
 
 
 /* getters and setters */
-int BmpHandler::get_size(int *width, int *height)
+int BmpHandler::get_size(int *width, int *height) const
 {
 	*width  = this->mBmpWidth;
 	*height = this->mBmpHeight;
@@ -158,7 +163,7 @@ void BmpHandler::set_size(const int &width, const int &height)
 
 
 
-int BmpHandler::get_pixel(BYTE rgb[BmpHandler::NUM_COLOR], int pos_x, int pos_y)
+int BmpHandler::get_pixel(BYTE rgb[BmpHandler::NUM_COLOR], int pos_x, int pos_y) const
 {
 	if (this->mBmpWidth < pos_y || this->mBmpHeight < pos_x){
 		return (-1);
