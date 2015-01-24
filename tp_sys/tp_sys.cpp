@@ -40,7 +40,9 @@ using marusa::swms::bytecpy;
 
 using marusa::swms::JOB_ID;
 using marusa::swms::TASK_ID;
+using marusa::swms::TASK_INFO;
 using marusa::swms::TASK_PKT_HEADER;
+using marusa::swms::TASKLST_PKT_BODY;
 
 
 class MyTPListener : public TaskProcessorAPI::TPCallbackListener
@@ -52,6 +54,32 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 
 		Result result(task.getJobId(), task.getTaskId(), nullptr, 0);
 		(context.taskProcessorAPI)->sendTaskFin(result);
+	}
+
+	void onTaskList(const TaskProcessorAPI::TPContext &context,
+					const std::vector<TASKLST_PKT_BODY *> &tasklist)
+	{
+		cout << "MyTPListener::onTaskList - task list :" << endl;
+
+		std::map<std::pair<JOB_ID, TASK_ID>, TASK_INFO *> newTaskList;
+		for (auto task_info : tasklist){
+			cout << "\t";
+			cout << "JOB-" << task_info->job_id << " ";
+			cout << "TASK-" << task_info->task_id << " ";
+			cout << ": " << task_info->put_time << endl;
+
+			std::pair<JOB_ID, TASK_ID> task_uid(task_info->job_id, task_info->task_id);
+
+			TASK_INFO *info = (TASK_INFO *)malloc(sizeof(TASK_INFO));
+			info->job_id    = task_info->job_id;
+			info->task_id   = task_info->task_id;
+			info->put_time  = task_info->put_time;
+			info->task_data = nullptr;
+
+			newTaskList[task_uid] = info;
+		}
+
+		(context.taskProcessorAPI)->renewTaskList(newTaskList);
 	}
 };
 
