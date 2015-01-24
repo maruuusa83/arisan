@@ -16,7 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *******************************************************************************/
 #include <iostream>
+#include <fstream>
 #include <unistd.h>
+
+#include <string>
 
 #include "common.h"
 #include "InterfaceAppAPI.h"
@@ -26,6 +29,8 @@
 #include "Job.h"
 
 #include "../mycmc/MyCmc.h"
+
+#include "../utilities/BmpHandler.h"
 
 using std::cout;
 using std::endl;
@@ -37,6 +42,10 @@ using marusa::swms::HOST_ID;
 using marusa::swms::BYTE;
 
 using marusa::swms::Job;
+
+using marusa::utilities::BmpHandler;
+
+static const int BUF_SIZE = 128;
 
 class MyIFAListener : public InterfaceAppAPI::IFACallbackListener
 {
@@ -56,6 +65,85 @@ public:
 		}
 	}
 };
+
+
+int splitBmpNine(std::vector<BmpHandler> &dividedBmps, const BmpHandler &bmp)
+{
+	int width, height;
+	bmp.get_size(&width, &height);
+
+	cout << "splitBmpNine - Split to w:" << width / 3 << " h:" << height / 3 << endl;
+
+	for (int y = 0; y < height; y += height / 3){
+		for (int x = 0; x < width; x += width / 3){
+			BmpHandler miniBmp;
+
+			// cpy data size
+			miniBmp.set_size(width / 3, height / 3);
+
+			// cpy data body
+			BYTE rgb_tmp[3];
+			for (int pos_y = y; pos_y < y + (height / 3); pos_y++){
+				for (int pos_x = x; pos_x < x + (width / 3); pos_x++){
+					bmp.get_pixel(rgb_tmp, pos_x, pos_y);
+					miniBmp.set_pixel(rgb_tmp, pos_x - x, pos_y - y);
+				}
+			}
+
+			// add to vector
+			dividedBmps.push_back(miniBmp);
+		}
+	}
+
+	return (0);
+}
+
+int sendBmpAsJob(const BmpHandler &bmp, const JOB_ID &job_id)
+{
+	std::vector<BmpHandler> dividedBmps;
+	splitBmpNine(dividedBmps, bmp);
+
+	for (auto dividedBmp : dividedBmps){
+
+	}
+
+	return (0);
+}
+
+int sendJobFromJobFile(const std::string jobfile_path)
+{
+	std::ifstream fin(jobfile_path.c_str(), std::ios::in);
+	char buf[BUF_SIZE];
+	int job_id;
+
+	while (1){
+		fin.getline(buf, BUF_SIZE);
+		if (buf[0] == '0' && buf[1] == '\0'){
+			// end of input
+			break;
+		}
+		int i = 0;
+		while (buf[i] != '\0') i++;
+		i--;
+		int job_id = 0;
+		while (i >= 0){
+			job_id *= 10;
+			job_id += buf[i] - '0';
+			i--;
+		}
+		printf("new task - JOB_ID : %d\n", job_id);
+
+
+		fin.getline(buf, BUF_SIZE);
+		std::string pos(buf);
+		BmpHandler bmp(pos);
+
+		sendBmpAsJob(bmp, job_id);
+	}
+
+	return (0);
+}
+
 
 int main()
 {
@@ -80,12 +168,36 @@ int main()
 	InterfaceAppAPI ifa(listener, cmc);
 	ifa.sendTasks(job);
 
+
+	std::string jobfile_path;
 	while (1){
-		ifa.sendReqResultList();
+		printf("0:sendReqResultList\n");
+		printf("1:read and send Job from Job file\n");
+		printf("9:quit this program\n");
 
-		sleep(5);
+		int cmd = 0;
+		scanf("%d", &cmd);
+
+		switch (cmd){
+		  case 0:
+			ifa.sendReqResultList();
+			break;
+
+		  case 1:
+			printf("Input path for Job file : ");
+			std::cin >> jobfile_path;
+
+			cout << jobfile_path << endl;
+
+			sendJobFromJobFile(jobfile_path);
+			break;
+
+		  case 9:
+			return (0);
+
+		  default:
+			break;
+		}
 	}
-
-	return (0);
 }
 
