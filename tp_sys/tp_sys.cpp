@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *******************************************************************************/
 #include <iostream>
+#include <random>
 
 #include "common.h"
 #include "TaskProcessorAPI.h"
@@ -52,6 +53,10 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 	{
 		cout << "MyTPListener::onTask - on task" << endl;
 
+		std::random_device r_seed;
+		std::mt19937 mt(r_seed());
+		sleep(std::generate_canonical<double, std::numeric_limits<double>::digits>(mt) * 10);
+
 		Result result(task.getJobId(), task.getTaskId(), nullptr, 0);
 		(context.taskProcessorAPI)->sendTaskFin(result);
 	}
@@ -63,10 +68,12 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 
 		std::map<std::pair<JOB_ID, TASK_ID>, TASK_INFO *> newTaskList;
 		for (auto task_info : tasklist){
+			/*
 			cout << "\t";
 			cout << "JOB-" << task_info->job_id << " ";
 			cout << "TASK-" << task_info->task_id << " ";
 			cout << ": " << task_info->put_time << endl;
+			*/
 
 			std::pair<JOB_ID, TASK_ID> task_uid(task_info->job_id, task_info->task_id);
 

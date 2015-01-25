@@ -71,6 +71,16 @@ public:
 		context.mSGY->sendTaskList(from);
 	}
 
+	void onRecvReqTask(const Stigmergy::SGYContext &context,
+					   const JOB_ID &job_id,
+					   const TASK_ID &task_id,
+					   const HOST_ID &from)
+	{
+		std::cout << "MySGYListener::onRecvReqTask - come request task" << std::endl;
+
+		context.mSGY->sendTask(from, job_id, task_id);
+	}
+
 	void onRecvTaskFin(const Stigmergy::SGYContext &context,
 					   const Result &result,
 					   const HOST_ID &from)

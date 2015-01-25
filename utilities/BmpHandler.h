@@ -43,9 +43,12 @@ private:
 public:
 	BmpHandler();
 	BmpHandler(std::string pos);
+	virtual ~BmpHandler();
 
 	int get_size(int *width, int *height) const;
 	void set_size(const int &width, const int &height);
+
+	int init_canbus();
 
 	int get_pixel(BYTE rgb[3], int pos_x, int pos_y) const;
 	int set_pixel(const BYTE rgb[3], const int &pos_x, const int &pos_y);

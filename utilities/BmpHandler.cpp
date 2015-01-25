@@ -22,7 +22,9 @@ namespace utilities {
 
 BmpHandler::BmpHandler()
 {
-
+	this->mBmpData = nullptr;
+	this->mBmpWidth = 0;
+	this->mBmpHeight = 0;
 }
 
 BmpHandler::BmpHandler(std::string pos)
@@ -33,6 +35,18 @@ BmpHandler::BmpHandler(std::string pos)
 	read_info_header(bmpFile);
 
 	read_bmp_body(bmpFile);
+
+	delete bmpFile;
+}
+
+BmpHandler::~BmpHandler()
+{
+	if (this->mBmpData != nullptr){
+		for (int i = 0; i < this->mBmpHeight; i++){
+			//free((this->mBmpData)[i]);
+		}
+		//free(this->mBmpData);
+	}
 }
 
 void BmpHandler::read_header(BmpFile *bmpFile)
@@ -161,6 +175,23 @@ void BmpHandler::set_size(const int &width, const int &height)
 	this->mBmpHeight = height;
 }
 
+
+int BmpHandler::init_canbus()
+{
+	if (this->mBmpData != nullptr){
+		for (int i = 0; i < this->mBmpHeight; i++){
+			free(this->mBmpData[i]);
+		}
+		free(this->mBmpData);
+	}
+
+	this->mBmpData = (unsigned int **)malloc(sizeof(unsigned int *) * mBmpHeight);
+	for (int i = 0; i < mBmpHeight; i++){
+		(this->mBmpData)[i] = (unsigned int *)malloc(sizeof(unsigned int) * mBmpWidth);
+	}
+
+	return (0);
+}
 
 
 int BmpHandler::get_pixel(BYTE rgb[BmpHandler::NUM_COLOR], int pos_x, int pos_y) const
