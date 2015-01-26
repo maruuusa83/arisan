@@ -16,6 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *******************************************************************************/
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <map>
 
 #include "common.h"
@@ -42,6 +44,8 @@ using marusa::swms::bytecpy;
 using marusa::swms::JOB_ID;
 using marusa::swms::TASK_ID;
 using marusa::swms::TASK_PKT_HEADER;
+
+std::map<int, bool> worker_map;
 
 class MySGYListener : public Stigmergy::SGYCallbackListener
 {
@@ -77,6 +81,16 @@ public:
 					   const HOST_ID &from)
 	{
 		std::cout << "MySGYListener::onRecvReqTask - come request task" << std::endl;
+
+		worker_map[from]++;
+
+		std::string pos = "./worker_info.dat";
+		std::ofstream fout(pos.c_str(), std::ios::out);
+		fout << "***" << std::endl;
+		for (auto worker_info : worker_map){
+			fout << worker_info.first << " - " << worker_info.second << std::endl;
+		}
+		fout << "***" << std::endl;
 
 		context.mSGY->sendTask(from, job_id, task_id);
 	}
