@@ -42,6 +42,11 @@ using marusalib::tcp::TCPServer;
 using marusalib::tcp::OnReplyRecvListener;
 using marusalib::tcp::RecvContext;
 
+typedef struct _task_header {
+	unsigned int width;
+	unsigned int height;
+	unsigned int data_size;
+} TASK_HEADER;
 
 class MyCmc : public CmcAdapter
 {

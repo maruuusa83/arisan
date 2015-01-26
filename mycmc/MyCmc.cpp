@@ -82,10 +82,10 @@ int MyCmc::getPort(int &port)
 
 void bytecpy(BYTE *to,
 			 const BYTE *from,
-			 unsigned int len)
+			 const unsigned int &len)
 {
-	while (len--){
-		*to++ = *from++;
+	for (unsigned int i = 0; i < len; i++){
+		to[i] = from[i];
 	}
 }
 
@@ -149,10 +149,10 @@ MyCmc::MyTCPListener::MyTCPListener(CmcAdapter::CmcContext *context, CmcAdapter:
 void MyCmc::MyTCPListener::onRecv(RecvContext *context, MESSAGE *msg)
 {
 #ifdef ___DEBUG_TRANS_TASK_IFA2SGY___
-#ifdef ___DEBUG_PKT_DMP___
 	std::cout << "MyCmc::MyTCPListener::onRecv - recieved message" << std::endl;
 	printf("\tmsg type : %d\n", (BYTE)*msg);
 	printf("\tmsg size : %d\n", *((int *)&msg[MessagePkt::SIZE_MSG_TYPE]));
+#ifdef ___DEBUG_PKT_DMP___
 	printf("msg dmp\n");
 	printf("**********************************************************\n");
 	printf("          ");
