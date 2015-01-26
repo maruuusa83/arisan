@@ -85,7 +85,7 @@ public:
 					   const Result &result,
 					   const HOST_ID &from)
 	{
-		std::cout << "MySGYListener::onRecvTaskFin - come result" << std::endl;
+		std::cout << "MySGYListener::onRecvTaskFin - come result " << result.getJobId() << "-" << result.getTaskId() << std::endl;
 
 		(context.mSGY)->addResult(result);
 

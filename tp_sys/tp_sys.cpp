@@ -51,14 +51,27 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 	void onTask(const TaskProcessorAPI::TPContext &context,
 				const Job::Task &task)
 	{
-		cout << "MyTPListener::onTask - on task" << endl;
+		if ((context.taskProcessorAPI)->getForbidInteruptFlag()){
+			return;
+		}
+		else {
+			(context.taskProcessorAPI)->forbidInterupt();
+		}
 
 		std::random_device r_seed;
 		std::mt19937 mt(r_seed());
+
+		std::uint32_t id = mt();
+		cout << "MyTPListener::onTask - on task " << id << " " << task.getJobId() << "-" << task.getTaskId() << endl;
+
 		sleep(std::generate_canonical<double, std::numeric_limits<double>::digits>(mt) * 10);
 
 		Result result(task.getJobId(), task.getTaskId(), nullptr, 0);
 		(context.taskProcessorAPI)->sendTaskFin(result);
+
+		cout << "\ttask fin:" << id << endl;
+
+		(context.taskProcessorAPI)->permitInterupt();
 	}
 
 	void onTaskList(const TaskProcessorAPI::TPContext &context,
