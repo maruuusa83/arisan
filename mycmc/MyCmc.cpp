@@ -23,7 +23,7 @@
 using marusa::swms::MessagePkt;
 #endif /* ___DEBUG_TRANS_TASK_IFA2SGY___ */
 
-[[gnu::deprecated("This context was deprecated. Use MyCmc::MyCmc(CmcContext *context, CmcCallbackListener *listener).")]]MyCmc::MyCmc(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
+MyCmc::MyCmc(CmcAdapter::CmcCallbackListener *listener) : CmcAdapter(listener)
 {
 	myTCPListener = new MyTCPListener(listener);
 }
