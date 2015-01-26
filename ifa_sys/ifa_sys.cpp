@@ -20,6 +20,7 @@
 #include <unistd.h>
 
 #include <time.h>
+#include <sys/time.h>
 #include <string>
 
 #include "common.h"
@@ -269,7 +270,7 @@ int main()
 				tv_result.tv_usec = clk_start.tv_usec - clk_end.tv_usec;
 			}
 
-			printf("time : %f\n", tv_result.tv_sec * 1000. + tv_result.tv_usec * 1000.);
+			printf("time : %f\n", tv_result.tv_sec + tv_result.tv_usec / 1000.);
 			/***   experiment for here  ***/
 			/******************************/
 			break;
