@@ -19,6 +19,7 @@
 #include <fstream>
 #include <unistd.h>
 
+#include <time.h>
 #include <string>
 
 #include "common.h"
@@ -48,6 +49,10 @@ using marusa::utilities::BmpHandler;
 
 static const int BUF_SIZE = 128;
 
+static const int NUM_EX_JOB = 1;
+static const int NUM_DIV_IMG = 81;
+bool fin_flag;
+
 class MyIFAListener : public InterfaceAppAPI::IFACallbackListener
 {
 public:
@@ -63,6 +68,10 @@ public:
 
 		for (auto info : results_info){
 			printf("\tJOB-%d TASK-%d\n", info.first, info.second);
+		}
+
+		if (results_info.size() == NUM_DIV_IMG * NUM_EX_JOB){
+			fin_flag = true;
 		}
 	}
 };
@@ -202,6 +211,7 @@ int main()
 	while (1){
 		printf("0:sendReqResultList\n");
 		printf("1:read and send Job from Job file\n");
+		printf("2:start experiment\n");
 		printf("9:quit this program\n");
 
 		int cmd = 0;
@@ -220,6 +230,50 @@ int main()
 
 			sendJobFromJobFile(ifa, jobfile_path);
 			break;
+
+		  case 2:
+		  {
+			printf("Start Experiment\n");
+			printf("Input path for Job file : ");
+			std::cin >> jobfile_path;
+
+			cout << jobfile_path << endl;
+
+
+			/******************************/
+			/***       experiment      ****/
+			struct timeval clk_start, clk_end;
+
+			gettimeofday(&clk_start, NULL);
+			sendJobFromJobFile(ifa, jobfile_path);
+			while (1){
+				ifa.sendReqResultList();
+
+				if (fin_flag == true){
+					break;
+				}
+
+				sleep(1);
+			}
+
+			gettimeofday(&clk_end, NULL);
+			printf("***FINISH EXPERIMENT***\n");
+
+			struct timeval tv_result;
+			tv_result.tv_sec  = clk_end.tv_sec - clk_start.tv_sec;
+			if (clk_start.tv_usec <= clk_end.tv_usec){
+				tv_result.tv_usec = clk_end.tv_usec - clk_start.tv_usec;
+			}
+			else {
+				tv_result.tv_sec--;
+				tv_result.tv_usec = clk_start.tv_usec - clk_end.tv_usec;
+			}
+
+			printf("time : %f\n", tv_result.tv_sec * 1000. + tv_result.tv_usec * 1000.);
+			/***   experiment for here  ***/
+			/******************************/
+			break;
+		  }
 
 		  case 9:
 			return (0);

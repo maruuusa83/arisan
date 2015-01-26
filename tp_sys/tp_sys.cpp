@@ -64,7 +64,7 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 		std::uint32_t id = mt();
 		cout << "MyTPListener::onTask - on task " << id << " " << task.getJobId() << "-" << task.getTaskId() << endl;
 
-		sleep(std::generate_canonical<double, std::numeric_limits<double>::digits>(mt) * 10);
+		sleep(std::generate_canonical<double, std::numeric_limits<double>::digits>(mt) * 2);
 
 		Result result(task.getJobId(), task.getTaskId(), nullptr, 0);
 		(context.taskProcessorAPI)->sendTaskFin(result);
