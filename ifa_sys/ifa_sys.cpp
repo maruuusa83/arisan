@@ -51,7 +51,8 @@ using marusa::utilities::BmpHandler;
 static const int BUF_SIZE = 128;
 
 static const int NUM_EX_JOB = 1;
-static const int NUM_DIV_IMG = 81;
+constexpr int NUM_SPLIT = 9;
+constexpr int NUM_DIV_IMG = NUM_SPLIT * NUM_SPLIT;
 bool fin_flag;
 
 class MyIFAListener : public InterfaceAppAPI::IFACallbackListener
@@ -114,7 +115,7 @@ int splitBmpN(std::vector<BmpHandler> &dividedBmps, const BmpHandler &bmp, const
 int sendBmpAsJob(InterfaceAppAPI &ifa, const BmpHandler &bmp, const JOB_ID &job_id)
 {
 	std::vector<BmpHandler> dividedBmps;
-	splitBmpN(dividedBmps, bmp, 9);
+	splitBmpN(dividedBmps, bmp, NUM_SPLIT);
 
 	Job job(job_id);
 	for (auto dividedBmp : dividedBmps){
