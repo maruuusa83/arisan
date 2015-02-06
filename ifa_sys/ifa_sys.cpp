@@ -51,7 +51,7 @@ using marusa::utilities::BmpHandler;
 static const int BUF_SIZE = 128;
 
 static const int NUM_EX_JOB = 1;
-constexpr int NUM_SPLIT = 15;
+constexpr int NUM_SPLIT = 9;
 constexpr int NUM_DIV_IMG = NUM_SPLIT * NUM_SPLIT;
 bool fin_flag;
 
@@ -86,8 +86,8 @@ int splitBmpN(std::vector<BmpHandler> &dividedBmps, const BmpHandler &bmp, const
 
 	cout << "splitBmpNine - Split to w:" << width / N << " h:" << height / N << endl;
 
-	for (int y = 0; y < height; y += height / N){
-		for (int x = 0; x < width; x += width / N){
+	for (int y = 0; y + (height / N) < height; y += height / N){
+		for (int x = 0; x + (width / N)< width; x += width / N){
 			cout << "\tBLK (" << x << ", " << y << ")" << endl;
 			BmpHandler miniBmp;
 
