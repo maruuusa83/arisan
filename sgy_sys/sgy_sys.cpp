@@ -19,6 +19,7 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <fstream>
 
 #include "common.h"
 #include "Stigmergy.h"
@@ -45,7 +46,7 @@ using marusa::swms::JOB_ID;
 using marusa::swms::TASK_ID;
 using marusa::swms::TASK_PKT_HEADER;
 
-std::map<int, bool> worker_map;
+std::map<int, int> worker_map;
 
 class MySGYListener : public Stigmergy::SGYCallbackListener
 {
@@ -103,6 +104,8 @@ public:
 
 		(context.mSGY)->addResult(result);
 
+		worker_map[from]++;
+
 		// deleting task
 		std::pair<JOB_ID, TASK_ID> task_uid(result.getJobId(), result.getTaskId());
 		(context.mSGY)->delTask(task_uid);
@@ -112,6 +115,22 @@ public:
 							 const HOST_ID &from)
 	{
 		std::cout << "MySGYListener::onRecvReqRequestList - come result list request" << std::endl;
+
+		std::string pos = "./woker_info.dat";
+		std::ofstream fout(pos.c_str(), std::ios::app);
+		int n = 0;
+		for (auto worker_info : worker_map){
+			if (n != 0){
+				fout << ",";
+			}
+
+			while (n != worker_info.first){
+				fout << "0,";
+				n++;
+			}
+			fout << worker_info.second;
+		}
+		fout << std::endl;
 
 		(context.mSGY)->sendResultList(from);
 	}

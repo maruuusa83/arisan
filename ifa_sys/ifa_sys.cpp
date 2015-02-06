@@ -270,6 +270,8 @@ int main()
 				tv_result.tv_usec = clk_start.tv_usec - clk_end.tv_usec;
 			}
 
+			printf("s : %f\n", clk_start.tv_sec + clk_start.tv_usec / 1000.);
+			printf("e : %f\n", clk_end.tv_sec + clk_end.tv_usec / 1000.);
 			printf("time : %f\n", tv_result.tv_sec + tv_result.tv_usec / 1000.);
 			/***   experiment for here  ***/
 			/******************************/
