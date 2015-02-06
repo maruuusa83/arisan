@@ -51,7 +51,7 @@ using marusa::utilities::BmpHandler;
 static const int BUF_SIZE = 128;
 
 static const int NUM_EX_JOB = 1;
-constexpr int NUM_SPLIT = 20;
+constexpr int NUM_SPLIT = 15;
 constexpr int NUM_DIV_IMG = NUM_SPLIT * NUM_SPLIT;
 bool fin_flag;
 
