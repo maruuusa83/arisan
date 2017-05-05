@@ -1,0 +1,6 @@
+[submodule "swms"]
+	path = swms
+	url = https://github.com/maruuusa83/arisan_swms.git
+[submodule "tcp"]
+	path = tcp
+	url = https://github.com/maruuusa83/tcp.git
