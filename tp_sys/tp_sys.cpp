@@ -18,6 +18,8 @@
 #include <iostream>
 #include <random>
 
+#include "rc4.h"
+
 #include "common.h"
 #include "TaskProcessorAPI.h"
 
