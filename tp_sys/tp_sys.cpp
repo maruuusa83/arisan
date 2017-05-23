@@ -17,8 +17,10 @@
  *******************************************************************************/
 #include <iostream>
 #include <random>
+#include <vector>
 
-#include "rc4.h"
+#include "../RC4/rc4.h"
+#include "../settings_ieice.h"
 
 #include "common.h"
 #include "TaskProcessorAPI.h"
@@ -60,18 +62,14 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 			(context.taskProcessorAPI)->forbidInterupt();
 		}
 
-		std::random_device r_seed;
-		std::mt19937 mt(r_seed());
+		/*** Task Processing ***/
+		cout << "MyTPListener::onTask - on task " << " " << task.getJobId() << "-" << task.getTaskId() << endl;
 
-		std::uint32_t id = mt();
-		cout << "MyTPListener::onTask - on task " << id << " " << task.getJobId() << "-" << task.getTaskId() << endl;
-
-		sleep(std::generate_canonical<double, std::numeric_limits<double>::digits>(mt) * 5);
-
+		/*** Send Result ***/
 		Result result(task.getJobId(), task.getTaskId(), nullptr, 0);
 		(context.taskProcessorAPI)->sendTaskFin(result);
 
-		cout << "\ttask fin:" << id << endl;
+		cout << "\ttask fin:" << endl;
 
 		(context.taskProcessorAPI)->permitInterupt();
 	}
@@ -102,6 +100,53 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 		}
 
 		(context.taskProcessorAPI)->renewTaskList(newTaskList);
+	}
+
+	unsigned int attack(const std::vector<marusa::BYTE> &plain,
+                            const std::vector<marusa::BYTE> &cipher,
+                            std::array<marusa::BYTE, KEY_SIZE> &obtained_key,
+                            const std::array<marusa::BYTE, KEY_SIZE> &from,
+                            const unsigned int split_size)
+	{
+	    /*** Key Attack ***/
+	    obtained_key = from;
+	
+	    std::vector<marusa::BYTE> t_dec;
+	    unsigned int trip_count = 0;
+	    while (true){
+	        if (trip_count == split_size){
+	            return (trip_count);
+	        }
+	 #ifdef ___DEBUG___
+	        if (trip_count % PRINT_COUNT == 0){
+	            printf("Tried %d keys\n", trip_count);
+	        }
+	 #endif /* ___DEBUG___ */
+	
+	        /* try key */
+	        marusa::RC4<KEY_SIZE> t_rc4(obtained_key);
+	        t_rc4.exec(cipher, t_dec);
+	
+	        if (t_dec == plain){ // when find the key
+	            break;
+	        }
+	
+	        /* increment key */
+	        for (int i = 0; i < (int)obtained_key.size(); i++){
+	            if (obtained_key[i] == 255){
+	                obtained_key[i] = 0;
+	            }
+	            else {
+	                obtained_key[i]++;
+	                break;
+	            }
+	        }
+	
+	        trip_count++;
+	    }
+	
+	    // printf("%d\n", trip_count);
+	    return (trip_count);
 	}
 };
 
