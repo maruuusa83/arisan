@@ -67,7 +67,7 @@ int MyCmc::startListen()
 
 int MyCmc::getStyPos(std::string &ip, int &port)
 {
-	ip = "192.168.11.62";
+	ip = "127.0.0.1";
 	getPort(port);
 
 	return (0);

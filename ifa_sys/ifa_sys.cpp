@@ -185,6 +185,11 @@ int sendJobFromJobFile(InterfaceAppAPI &ifa, const std::string jobfile_path)
 	return (0);
 }
 
+int sendJob(InterfaceAppAPI &ifa)
+{
+    sendAttackJob(ifa, job_id);
+}
+
 
 int main()
 {

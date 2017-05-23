@@ -65,6 +65,12 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 		/*** Task Processing ***/
 		cout << "MyTPListener::onTask - on task " << " " << task.getJobId() << "-" << task.getTaskId() << endl;
 
+		BYTE *data;
+		unsigned int data_size;
+		task.getData(&data, data_size);
+	        for (unsigned int i = 0; i < data_size; i++) printf("%c ", data[i]);
+	        // attack(plain, cipher, obtained_key, from, split_size);
+
 		/*** Send Result ***/
 		Result result(task.getJobId(), task.getTaskId(), nullptr, 0);
 		(context.taskProcessorAPI)->sendTaskFin(result);
