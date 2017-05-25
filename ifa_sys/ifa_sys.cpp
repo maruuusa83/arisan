@@ -89,11 +89,16 @@ public:
 
         result.getData(&data, data_size);
 
-        cout << "MyIFAListener::onRecvTaskFin - Result : ";
-        for (unsigned int i = 0; i < data_size; i++){
-            printf("%d ", data[i]);
+        if (data[0] == 1){
+            cout << "MyIFAListener::onRecvTaskFin - A KEY HAS FOUND !!!";
+
+            cout << endl;
+            for (unsigned int i = 1; i < data_size; i++){
+                printf("%d ", data[i]);
+            }
+            cout << endl;
         }
-        cout << endl;
+
 
         result.freeData(data);
     }
