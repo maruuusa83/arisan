@@ -23,6 +23,8 @@
 #include <sys/time.h>
 #include <string>
 
+#include "../RC4/rc4.h"
+
 #include "common.h"
 #include "InterfaceAppAPI.h"
 
@@ -185,11 +187,44 @@ int sendJobFromJobFile(InterfaceAppAPI &ifa, const std::string jobfile_path)
 	return (0);
 }
 
-int sendJob(InterfaceAppAPI &ifa)
+int sendJob(InterfaceAppAPI &ifa, unsigned int num_split)
 {
-    sendAttackJob(ifa, job_id);
-}
+    static int job_id = 0;
 
+    // Job Settings
+    std::array<marusa::BYTE, KEY_SIZE> key{1, 2};
+    std::vector<marusa::BYTE> plain_text;
+    for (unsigned int i = 0; i < TEXT_SIZE; i++){
+        plain_text.push_back(i);
+    }
+
+    marusa::RC4<KEY_SIZE> rc4(key);
+    std::vector<marusa::BYTE> cipher_text;
+    rc4.exec(plain_text, cipher_text);
+
+    // Generate Job
+    Job job(++job_id);
+    for (unsigned int task_id = 0; task_id < num_split; task_id++){
+        TASK_RC4_ATK task_data;
+
+        for (unsigned int i = 0; i < TEXT_SIZE; i++){
+            task_data.plain_text[i] = plain_text[i];
+            task_data.cipher_text[i] = cipher_text[i];
+        }
+        for (unsigned int i = 0; i < KEY_SIZE; i++){
+            task_data.from[i] = 0;
+        }
+        task_data.split_size = CALC_SPLIT_SIZE(num_split);
+        
+        Job::Task task;
+        task.setData((BYTE *)&task_data, sizeof(TASK_RC4_ATK));
+        job.addTask(task);
+    }
+
+    ifa.sendTasks(job);
+
+    return (0);
+}
 
 int main()
 {
@@ -230,12 +265,7 @@ int main()
 			break;
 
 		  case 1:
-			printf("Input path for Job file : ");
-			std::cin >> jobfile_path;
-
-			cout << jobfile_path << endl;
-
-			sendJobFromJobFile(ifa, jobfile_path);
+            sendJob(ifa, 1);
 			break;
 
 		  case 2:

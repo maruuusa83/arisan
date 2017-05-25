@@ -22,6 +22,7 @@
 #include "CmcAdapter.h"
 #include "Stigmergy.h"
 #include "CmcContext.h"
+#include "../settings_ieice.h"
 
 #include "../tcp/TCPClient.h"
 #include "../tcp/TCPServer.h"
@@ -47,6 +48,13 @@ typedef struct _task_header {
 	unsigned int height;
 	unsigned int data_size;
 } TASK_HEADER;
+
+typedef struct _task_rc4_atk {
+    BYTE plain_text[TEXT_SIZE];
+    BYTE cipher_text[TEXT_SIZE];
+    BYTE from[KEY_SIZE];
+    unsigned int split_size;
+} TASK_RC4_ATK;
 
 class MyCmc : public CmcAdapter
 {
