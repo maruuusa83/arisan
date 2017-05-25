@@ -33,6 +33,8 @@
 
 #include "../mycmc/MyCmc.h"
 
+#define PRINT_BYTES(DATA) for (auto byte : (DATA)) printf("%x ", byte)
+
 using std::cout;
 using std::endl;
 
@@ -68,8 +70,17 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 		BYTE *data;
 		unsigned int data_size;
 		task.getData(&data, data_size);
-	        for (unsigned int i = 0; i < data_size; i++) printf("%c ", data[i]);
-	        // attack(plain, cipher, obtained_key, from, split_size);
+        for (unsigned int i = 0; i < data_size; i++) printf("%x ", data[i]);
+        printf("\n");
+
+        std::vector<marusa::BYTE> plain(((TASK_RC4_ATK *)data)->plain_text, ((TASK_RC4_ATK *)data)->plain_text + TEXT_SIZE);
+        std::vector<marusa::BYTE> cipher(((TASK_RC4_ATK *)data)->cipher_text, ((TASK_RC4_ATK *)data)->cipher_text + TEXT_SIZE);
+        std::array<marusa::BYTE, KEY_SIZE> from, obtained_key;
+        for (unsigned int i = 0; i < KEY_SIZE; i++) from[i] = ((TASK_RC4_ATK *)data)->from[i];
+        unsigned int split_size = ((TASK_RC4_ATK *)data)->split_size;
+        printf("split_size = %d\n", split_size);
+
+        attack(plain, cipher, obtained_key, from, split_size);
 
 		/*** Send Result ***/
 		Result result(task.getJobId(), task.getTaskId(), nullptr, 0);
@@ -114,6 +125,7 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
                             const std::array<marusa::BYTE, KEY_SIZE> &from,
                             const unsigned int split_size)
 	{
+        printf("**** THIS IS KEY ATTATKER ***\n");
 	    /*** Key Attack ***/
 	    obtained_key = from;
 	
@@ -121,6 +133,7 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 	    unsigned int trip_count = 0;
 	    while (true){
 	        if (trip_count == split_size){
+                printf("trip_strip : %d %d\n", trip_count, split_size);
 	            return (trip_count);
 	        }
 	 #ifdef ___DEBUG___
@@ -152,6 +165,12 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 	    }
 	
 	    // printf("%d\n", trip_count);
+        printf("\n\n**********\n");
+        PRINT_BYTES(plain); printf("\n");
+        PRINT_BYTES(cipher); printf("\n");
+        PRINT_BYTES(obtained_key); printf("\n");
+        printf("**********\n\n");
+
 	    return (trip_count);
 	}
 };
