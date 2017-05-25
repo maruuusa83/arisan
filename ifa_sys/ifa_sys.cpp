@@ -23,6 +23,8 @@
 #include <sys/time.h>
 #include <string>
 
+#include <chrono>
+
 #include "../RC4/rc4.h"
 
 #include "common.h"
@@ -305,6 +307,7 @@ int main()
 			/******************************/
 			/***       experiment      ****/
 			struct timeval clk_start, clk_end;
+            auto start = std::chrono::system_clock::now();
 
 			gettimeofday(&clk_start, NULL);
             fin_flag = false;
@@ -318,6 +321,7 @@ int main()
 			}
 
 			gettimeofday(&clk_end, NULL);
+            auto end = std::chrono::system_clock::now();
 			printf("***FINISH EXPERIMENT***\n");
 
 			struct timeval tv_result;
@@ -333,6 +337,11 @@ int main()
 			printf("s : %f\n", clk_start.tv_sec + clk_start.tv_usec / 1000.);
 			printf("e : %f\n", clk_end.tv_sec + clk_end.tv_usec / 1000.);
 			printf("time : %f\n", tv_result.tv_sec + tv_result.tv_usec / 1000.);
+
+            auto diff = end - start;
+            std::cout << "time : "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(diff).count()
+                      << " msec" << std::endl;
 			/***   experiment for here  ***/
 			/******************************/
 			break;
