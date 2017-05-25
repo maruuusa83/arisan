@@ -303,40 +303,27 @@ int main()
 		  case 2:
 		  {
 			printf("Start Experiment\n");
+            printf("SPLIT NUM ? : ");
+            int split_num;
+            scanf("%d", &split_num);
+            
 
 			/******************************/
 			/***       experiment      ****/
-			struct timeval clk_start, clk_end;
             auto start = std::chrono::system_clock::now();
 
-			gettimeofday(&clk_start, NULL);
             fin_flag = false;
-            sendJob(ifa, 1);
+            sendJob(ifa, split_num);
 			while (1){
 				if (fin_flag == true){
 					break;
 				}
 
-				usleep(50000);
+				usleep(5000);
 			}
 
-			gettimeofday(&clk_end, NULL);
             auto end = std::chrono::system_clock::now();
-			printf("***FINISH EXPERIMENT***\n");
-
-			struct timeval tv_result;
-			tv_result.tv_sec  = clk_end.tv_sec - clk_start.tv_sec;
-			if (clk_start.tv_usec <= clk_end.tv_usec){
-				tv_result.tv_usec = clk_end.tv_usec - clk_start.tv_usec;
-			}
-			else {
-				tv_result.tv_sec--;
-				tv_result.tv_usec = clk_start.tv_usec - clk_end.tv_usec;
-			}
-
-			printf("s : %f\n", clk_start.tv_sec + clk_start.tv_usec / 1000.);
-			printf("e : %f\n", clk_end.tv_sec + clk_end.tv_usec / 1000.);
-			printf("time : %f\n", tv_result.tv_sec + tv_result.tv_usec / 1000.);
+			printf("#######***FINISH EXPERIMENT***########\n");
 
             auto diff = end - start;
             std::cout << "time : "
