@@ -91,6 +91,7 @@ public:
 
         if (data[0] == 1){
             cout << "MyIFAListener::onRecvTaskFin - A KEY HAS FOUND !!!";
+            fin_flag = true;
 
             cout << endl;
             for (unsigned int i = 1; i < data_size; i++){
@@ -300,26 +301,20 @@ int main()
 		  case 2:
 		  {
 			printf("Start Experiment\n");
-			printf("Input path for Job file : ");
-			std::cin >> jobfile_path;
-
-			cout << jobfile_path << endl;
-
 
 			/******************************/
 			/***       experiment      ****/
 			struct timeval clk_start, clk_end;
 
 			gettimeofday(&clk_start, NULL);
-			sendJobFromJobFile(ifa, jobfile_path);
+            fin_flag = false;
+            sendJob(ifa, 1);
 			while (1){
-				ifa.sendReqResultList();
-
 				if (fin_flag == true){
 					break;
 				}
 
-				sleep(1);
+				usleep(50000);
 			}
 
 			gettimeofday(&clk_end, NULL);
