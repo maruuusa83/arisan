@@ -337,7 +337,7 @@ int main()
             auto end = std::chrono::system_clock::now();
 			printf("#######***FINISH EXPERIMENT***########\n");
 
-#define PRINT_BYTES(DATA) for (auto byte : (DATA)) printf("%x ", byte)
+#define PRINT_BYTES(DATA) for (auto byte : (DATA)) printf("%d ", byte)
             PRINT_BYTES(key);
 #undef PRINT_BYTES
 
