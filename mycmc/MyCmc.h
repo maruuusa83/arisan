@@ -54,6 +54,7 @@ typedef struct _task_rc4_atk {
     BYTE cipher_text[TEXT_SIZE];
     BYTE from[KEY_SIZE];
     unsigned int split_size;
+    BYTE _TMP[4];
 } TASK_RC4_ATK;
 
 class MyCmc : public CmcAdapter

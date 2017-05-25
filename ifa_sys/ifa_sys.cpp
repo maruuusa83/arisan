@@ -202,6 +202,8 @@ int sendJob(InterfaceAppAPI &ifa, unsigned int num_split)
     std::vector<marusa::BYTE> cipher_text;
     rc4.exec(plain_text, cipher_text);
 
+    unsigned int t_start_position = 0;
+
     // Generate Job
     Job job(++job_id);
     for (unsigned int task_id = 0; task_id < num_split; task_id++){
@@ -211,14 +213,17 @@ int sendJob(InterfaceAppAPI &ifa, unsigned int num_split)
             task_data.plain_text[i] = plain_text[i];
             task_data.cipher_text[i] = cipher_text[i];
         }
+
         for (unsigned int i = 0; i < KEY_SIZE; i++){
-            task_data.from[i] = 0;
+            task_data.from[i] = ((BYTE *)&t_start_position)[KEY_SIZE - i];
         }
-        task_data.split_size = CALC_SPLIT_SIZE(num_split);
+        task_data.split_size = (unsigned int)CALC_SPLIT_SIZE(num_split);
         
         Job::Task task;
         task.setData((BYTE *)&task_data, sizeof(TASK_RC4_ATK));
         job.addTask(task);
+
+        t_start_position += CALC_SPLIT_SIZE(num_split);
     }
 
     ifa.sendTasks(job);
@@ -265,7 +270,7 @@ int main()
 			break;
 
 		  case 1:
-            sendJob(ifa, 1);
+            sendJob(ifa, 16);
 			break;
 
 		  case 2:

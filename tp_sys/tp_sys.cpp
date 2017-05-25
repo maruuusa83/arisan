@@ -169,7 +169,7 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
         PRINT_BYTES(plain); printf("\n");
         PRINT_BYTES(cipher); printf("\n");
         PRINT_BYTES(obtained_key); printf("\n");
-        printf("**********\n\n");
+        printf("\n**********\n\n");
 
 	    return (trip_count);
 	}
