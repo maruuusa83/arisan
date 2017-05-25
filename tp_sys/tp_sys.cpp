@@ -80,11 +80,15 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
         unsigned int split_size = ((TASK_RC4_ATK *)data)->split_size;
         printf("split_size = %d\n", split_size);
 
-        attack(plain, cipher, obtained_key, from, split_size);
+        unsigned int num_itr = attack(plain, cipher, obtained_key, from, split_size);
 
 		/*** Send Result ***/
-		Result result(task.getJobId(), task.getTaskId(), nullptr, 0);
+        BYTE *result_pack = (BYTE *)malloc(obtained_key.size() + 1);
+        result_pack[0] = (num_itr == split_size) ? 0 : 1;
+        for (unsigned int i = 0; i < obtained_key.size(); i++) result_pack[i + 1] = obtained_key[i];
+		Result result(task.getJobId(), task.getTaskId(), result_pack, obtained_key.size() + 1);
 		(context.taskProcessorAPI)->sendTaskFin(result);
+        free(result_pack);
 
 		cout << "\ttask fin:" << endl;
 
@@ -128,6 +132,11 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
         printf("**** THIS IS KEY ATTATKER ***\n");
 	    /*** Key Attack ***/
 	    obtained_key = from;
+        printf("\n\n*****45573947593475938759374597*****\n");
+        PRINT_BYTES(plain); printf("\n");
+        PRINT_BYTES(cipher); printf("\n");
+        PRINT_BYTES(obtained_key); printf("\n");
+        printf("\n**********\n\n");
 	
 	    std::vector<marusa::BYTE> t_dec;
 	    unsigned int trip_count = 0;

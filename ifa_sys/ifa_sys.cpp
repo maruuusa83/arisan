@@ -27,6 +27,7 @@
 
 #include "common.h"
 #include "InterfaceAppAPI.h"
+#include "Result.h"
 
 #include "CmcAdapter.h"
 #include "CmcContext.h"
@@ -47,6 +48,7 @@ using marusa::swms::BYTE;
 using marusa::swms::bytecpy;
 
 using marusa::swms::Job;
+using marusa::swms::Result;
 
 using marusa::utilities::BmpHandler;
 
@@ -78,6 +80,28 @@ public:
 			fin_flag = true;
 		}
 	}
+
+    void onRecvTaskFin(const InterfaceAppAPI::IFAContext &context,
+                       const Result &result)
+    {
+        BYTE *data;
+        unsigned int data_size;
+
+        result.getData(&data, data_size);
+
+        if (data[0] == 1){
+            cout << "MyIFAListener::onRecvTaskFin - A KEY HAS FOUND !!!";
+
+            cout << endl;
+            for (unsigned int i = 1; i < data_size; i++){
+                printf("%d ", data[i]);
+            }
+            cout << endl;
+        }
+
+
+        result.freeData(data);
+    }
 };
 
 
