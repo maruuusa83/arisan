@@ -229,7 +229,7 @@ int sendJob(InterfaceAppAPI &ifa, unsigned int num_split)
 
     std::vector<marusa::BYTE> plain_text;
     for (unsigned int i = 0; i < TEXT_SIZE; i++){
-        plain_text.push_back(i);
+        plain_text.push_back(rand_byte(mt));
     }
 
     marusa::RC4<KEY_SIZE> rc4(key);
