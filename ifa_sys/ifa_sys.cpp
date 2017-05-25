@@ -24,6 +24,7 @@
 #include <string>
 
 #include <chrono>
+#include <random>
 
 #include "../RC4/rc4.h"
 
@@ -219,7 +220,13 @@ int sendJob(InterfaceAppAPI &ifa, unsigned int num_split)
     static int job_id = 0;
 
     // Job Settings
-    std::array<marusa::BYTE, KEY_SIZE> key{1, 2};
+    std::random_device rd;
+    std::mt19937 mt(rd()); // give a seed using std::random_device
+    std::uniform_int_distribution<> rand_byte(0, marusa::BYTE_SIZE - 1);
+
+    std::array<marusa::BYTE, KEY_SIZE> key;
+    for (unsigned int i = 0; i < KEY_SIZE; i++) key[i] = rand_byte(mt) % marusa::BYTE_SIZE;
+
     std::vector<marusa::BYTE> plain_text;
     for (unsigned int i = 0; i < TEXT_SIZE; i++){
         plain_text.push_back(i);
