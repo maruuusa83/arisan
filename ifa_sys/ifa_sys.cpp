@@ -19,12 +19,21 @@
 #include <fstream>
 #include <unistd.h>
 
+#include <vector>
+#include <array>
+
 #include <time.h>
 #include <sys/time.h>
 #include <string>
 
+#include <chrono>
+#include <random>
+
+#include "../RC4/rc4.h"
+
 #include "common.h"
 #include "InterfaceAppAPI.h"
+#include "Result.h"
 
 #include "CmcAdapter.h"
 #include "CmcContext.h"
@@ -45,6 +54,7 @@ using marusa::swms::BYTE;
 using marusa::swms::bytecpy;
 
 using marusa::swms::Job;
+using marusa::swms::Result;
 
 using marusa::utilities::BmpHandler;
 
@@ -76,6 +86,29 @@ public:
 			fin_flag = true;
 		}
 	}
+
+    void onRecvTaskFin(const InterfaceAppAPI::IFAContext &context,
+                       const Result &result)
+    {
+        BYTE *data;
+        unsigned int data_size;
+
+        result.getData(&data, data_size);
+
+        if (data[0] == 1){
+            cout << "MyIFAListener::onRecvTaskFin - A KEY HAS FOUND !!!";
+            fin_flag = true;
+
+            cout << endl;
+            for (unsigned int i = 1; i < data_size; i++){
+                printf("%d ", data[i]);
+            }
+            cout << endl;
+        }
+
+
+        result.freeData(data);
+    }
 };
 
 
@@ -185,6 +218,53 @@ int sendJobFromJobFile(InterfaceAppAPI &ifa, const std::string jobfile_path)
 	return (0);
 }
 
+int sendJob(InterfaceAppAPI &ifa, unsigned int num_split, std::array<marusa::BYTE, KEY_SIZE> &key, std::vector<marusa::BYTE> &plain_text)
+{
+    static int job_id = 0;
+
+    // Job Settings
+    std::random_device rd;
+    std::mt19937 mt(rd()); // give a seed using std::random_device
+    std::uniform_int_distribution<> rand_byte(0, marusa::BYTE_SIZE - 1);
+
+    for (unsigned int i = 0; i < KEY_SIZE; i++) key[i] = rand_byte(mt) % marusa::BYTE_SIZE;
+
+    for (unsigned int i = 0; i < TEXT_SIZE; i++){
+        plain_text.push_back(rand_byte(mt));
+    }
+
+    marusa::RC4<KEY_SIZE> rc4(key);
+    std::vector<marusa::BYTE> cipher_text;
+    rc4.exec(plain_text, cipher_text);
+
+    unsigned int t_start_position = 0;
+
+    // Generate Job
+    Job job(++job_id);
+    for (unsigned int task_id = 0; task_id < num_split; task_id++){
+        TASK_RC4_ATK task_data;
+
+        for (unsigned int i = 0; i < TEXT_SIZE; i++){
+            task_data.plain_text[i] = plain_text[i];
+            task_data.cipher_text[i] = cipher_text[i];
+        }
+
+        for (unsigned int i = 0; i < KEY_SIZE; i++){
+            task_data.from[i] = ((BYTE *)&t_start_position)[KEY_SIZE - i];
+        }
+        task_data.split_size = (unsigned int)CALC_SPLIT_SIZE(num_split);
+        
+        Job::Task task;
+        task.setData((BYTE *)&task_data, sizeof(TASK_RC4_ATK));
+        job.addTask(task);
+
+        t_start_position += CALC_SPLIT_SIZE(num_split);
+    }
+
+    ifa.sendTasks(job);
+
+    return (0);
+}
 
 int main()
 {
@@ -219,61 +299,52 @@ int main()
 		int cmd = 0;
 		scanf("%d", &cmd);
 
+        std::array<marusa::BYTE, KEY_SIZE> key;
+        std::vector<marusa::BYTE> plain_text;
+
 		switch (cmd){
 		  case 0:
 			ifa.sendReqResultList();
 			break;
 
 		  case 1:
-			printf("Input path for Job file : ");
-			std::cin >> jobfile_path;
-
-			cout << jobfile_path << endl;
-
-			sendJobFromJobFile(ifa, jobfile_path);
+            sendJob(ifa, 16, key, plain_text);
 			break;
 
 		  case 2:
 		  {
 			printf("Start Experiment\n");
-			printf("Input path for Job file : ");
-			std::cin >> jobfile_path;
-
-			cout << jobfile_path << endl;
-
+            printf("SPLIT NUM ? : ");
+            int split_num;
+            scanf("%d", &split_num);
+            
 
 			/******************************/
 			/***       experiment      ****/
-			struct timeval clk_start, clk_end;
+            auto start = std::chrono::system_clock::now();
 
-			gettimeofday(&clk_start, NULL);
-			sendJobFromJobFile(ifa, jobfile_path);
+            fin_flag = false;
+            sendJob(ifa, split_num, key, plain_text);
+
 			while (1){
-				ifa.sendReqResultList();
-
 				if (fin_flag == true){
 					break;
 				}
 
-				sleep(1);
+				usleep(5000);
 			}
 
-			gettimeofday(&clk_end, NULL);
-			printf("***FINISH EXPERIMENT***\n");
+            auto end = std::chrono::system_clock::now();
+			printf("#######***FINISH EXPERIMENT***########\n");
 
-			struct timeval tv_result;
-			tv_result.tv_sec  = clk_end.tv_sec - clk_start.tv_sec;
-			if (clk_start.tv_usec <= clk_end.tv_usec){
-				tv_result.tv_usec = clk_end.tv_usec - clk_start.tv_usec;
-			}
-			else {
-				tv_result.tv_sec--;
-				tv_result.tv_usec = clk_start.tv_usec - clk_end.tv_usec;
-			}
+#define PRINT_BYTES(DATA) for (auto byte : (DATA)) printf("%x ", byte)
+            PRINT_BYTES(key);
+#undef PRINT_BYTES
 
-			printf("s : %f\n", clk_start.tv_sec + clk_start.tv_usec / 1000.);
-			printf("e : %f\n", clk_end.tv_sec + clk_end.tv_usec / 1000.);
-			printf("time : %f\n", tv_result.tv_sec + tv_result.tv_usec / 1000.);
+            auto diff = end - start;
+            std::cout << "time : "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(diff).count()
+                      << " msec" << std::endl;
 			/***   experiment for here  ***/
 			/******************************/
 			break;

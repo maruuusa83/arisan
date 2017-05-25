@@ -4,3 +4,6 @@
 [submodule "tcp"]
 	path = tcp
 	url = https://github.com/maruuusa83/tcp.git
+[submodule "RC4"]
+	path = RC4
+	url = https://github.com/maruuusa83/RC4.git

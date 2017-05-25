@@ -38,8 +38,8 @@ CC = g++-4.7
 #-------------------------------------------------------------------
 # Compile Option
 #-------------------------------------------------------------------
-INCDIR = ../swms/includes/
-CFLAGS = -Wall -O0 -g -pthread -std=c++11 -I $(INCDIR)
+INCDIR = -I ../swms/includes/ -I ../RC4/
+CFLAGS = -Wall -O0 -g -pthread -std=c++11 $(INCDIR)
 
 #-------------------------------------------------------------------
 # Definition
@@ -79,7 +79,7 @@ gen_aolist:
 .PHONY: depend
 depend: $(SRC)
 	-@ $(RM) depend.inc
-	-@ for i in $^; do cpp -std=c++11 -MM $$i -I $(INCDIR) | sed "s/\ [_a-zA-Z0-9][_a-zA-Z0-9]*\.cpp//g" >> depend.inc; done
+	-@ for i in $^; do cpp -std=c++11 -MM $$i $(INCDIR) | sed "s/\ [_a-zA-Z0-9][_a-zA-Z0-9]*\.cpp//g" >> depend.inc; done
 
 .PHONY: clean
 clean:

@@ -17,6 +17,10 @@
  *******************************************************************************/
 #include <iostream>
 #include <random>
+#include <vector>
+
+#include "../RC4/rc4.h"
+#include "../settings_ieice.h"
 
 #include "common.h"
 #include "TaskProcessorAPI.h"
@@ -28,6 +32,8 @@
 #include "Result.h"
 
 #include "../mycmc/MyCmc.h"
+
+#define PRINT_BYTES(DATA) for (auto byte : (DATA)) printf("%x ", byte)
 
 using std::cout;
 using std::endl;
@@ -58,18 +64,33 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 			(context.taskProcessorAPI)->forbidInterupt();
 		}
 
-		std::random_device r_seed;
-		std::mt19937 mt(r_seed());
+		/*** Task Processing ***/
+		cout << "MyTPListener::onTask - on task " << " " << task.getJobId() << "-" << task.getTaskId() << endl;
 
-		std::uint32_t id = mt();
-		cout << "MyTPListener::onTask - on task " << id << " " << task.getJobId() << "-" << task.getTaskId() << endl;
+		BYTE *data;
+		unsigned int data_size;
+		task.getData(&data, data_size);
+        for (unsigned int i = 0; i < data_size; i++) printf("%x ", data[i]);
+        printf("\n");
 
-		sleep(std::generate_canonical<double, std::numeric_limits<double>::digits>(mt) * 5);
+        std::vector<marusa::BYTE> plain(((TASK_RC4_ATK *)data)->plain_text, ((TASK_RC4_ATK *)data)->plain_text + TEXT_SIZE);
+        std::vector<marusa::BYTE> cipher(((TASK_RC4_ATK *)data)->cipher_text, ((TASK_RC4_ATK *)data)->cipher_text + TEXT_SIZE);
+        std::array<marusa::BYTE, KEY_SIZE> from, obtained_key;
+        for (unsigned int i = 0; i < KEY_SIZE; i++) from[i] = ((TASK_RC4_ATK *)data)->from[i];
+        unsigned int split_size = ((TASK_RC4_ATK *)data)->split_size;
+        printf("split_size = %d\n", split_size);
 
-		Result result(task.getJobId(), task.getTaskId(), nullptr, 0);
+        unsigned int num_itr = attack(plain, cipher, obtained_key, from, split_size);
+
+		/*** Send Result ***/
+        BYTE *result_pack = (BYTE *)malloc(obtained_key.size() + 1);
+        result_pack[0] = (num_itr == split_size) ? 0 : 1;
+        for (unsigned int i = 0; i < obtained_key.size(); i++) result_pack[i + 1] = obtained_key[i];
+		Result result(task.getJobId(), task.getTaskId(), result_pack, obtained_key.size() + 1);
 		(context.taskProcessorAPI)->sendTaskFin(result);
+        free(result_pack);
 
-		cout << "\ttask fin:" << id << endl;
+		cout << "\ttask fin:" << endl;
 
 		(context.taskProcessorAPI)->permitInterupt();
 	}
@@ -100,6 +121,66 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 		}
 
 		(context.taskProcessorAPI)->renewTaskList(newTaskList);
+	}
+
+	unsigned int attack(const std::vector<marusa::BYTE> &plain,
+                            const std::vector<marusa::BYTE> &cipher,
+                            std::array<marusa::BYTE, KEY_SIZE> &obtained_key,
+                            const std::array<marusa::BYTE, KEY_SIZE> &from,
+                            const unsigned int split_size)
+	{
+        printf("**** THIS IS KEY ATTATKER ***\n");
+	    /*** Key Attack ***/
+	    obtained_key = from;
+        printf("\n\n*****45573947593475938759374597*****\n");
+        PRINT_BYTES(plain); printf("\n");
+        PRINT_BYTES(cipher); printf("\n");
+        PRINT_BYTES(obtained_key); printf("\n");
+        printf("\n**********\n\n");
+	
+	    std::vector<marusa::BYTE> t_dec;
+	    unsigned int trip_count = 0;
+	    while (true){
+	        if (trip_count == split_size){
+                printf("trip_strip : %d %d\n", trip_count, split_size);
+	            return (trip_count);
+	        }
+	 #ifdef ___DEBUG___
+	        if (trip_count % PRINT_COUNT == 0){
+	            printf("Tried %d keys\n", trip_count);
+	        }
+	 #endif /* ___DEBUG___ */
+	
+	        /* try key */
+	        marusa::RC4<KEY_SIZE> t_rc4(obtained_key);
+	        t_rc4.exec(cipher, t_dec);
+	
+	        if (t_dec == plain){ // when find the key
+	            break;
+	        }
+	
+	        /* increment key */
+	        for (int i = 0; i < (int)obtained_key.size(); i++){
+	            if (obtained_key[i] == 255){
+	                obtained_key[i] = 0;
+	            }
+	            else {
+	                obtained_key[i]++;
+	                break;
+	            }
+	        }
+	
+	        trip_count++;
+	    }
+	
+	    // printf("%d\n", trip_count);
+        printf("\n\n**********\n");
+        PRINT_BYTES(plain); printf("\n");
+        PRINT_BYTES(cipher); printf("\n");
+        PRINT_BYTES(obtained_key); printf("\n");
+        printf("\n**********\n\n");
+
+	    return (trip_count);
 	}
 };
 

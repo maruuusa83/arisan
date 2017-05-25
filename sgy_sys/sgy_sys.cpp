@@ -52,7 +52,8 @@ class MySGYListener : public Stigmergy::SGYCallbackListener
 {
 public:
 	void onRecvTask(const Stigmergy::SGYContext &context,
-					const BYTE *task)
+					const BYTE *task,
+                    const HOST_ID hostid)
 	{
 		std::cout << "MySGYListener::onRecvJobId - come task" << std::endl;
 
@@ -62,6 +63,8 @@ public:
 		//mMapTasks[task_uid] = (BYTE *)malloc(sizeof(BYTE) * task_pkt_header->data_size);
 		//bytecpy((BYTE *)mMapTasks[task_uid], &task[sizeof(TASK_PKT_HEADER)], task_pkt_header->data_size);
 		context.mSGY->addTask(task_uid, &task[sizeof(TASK_PKT_HEADER)], task_pkt_header->data_size);
+
+        context.mSGY->setIFAID(hostid);
 
 		printf("\tJOB ID\t\t: %d\n", task_pkt_header->job_id);
 		printf("\tTASK ID\t\t: %d\n", task_pkt_header->task_id);
@@ -103,6 +106,8 @@ public:
 		std::cout << "MySGYListener::onRecvTaskFin - come result " << result.getJobId() << "-" << result.getTaskId() << std::endl;
 
 		(context.mSGY)->addResult(result);
+
+        context.mSGY->sendTaskFinToIF(context, result);
 
 		worker_map[from]++;
 
