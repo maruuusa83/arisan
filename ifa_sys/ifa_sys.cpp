@@ -19,11 +19,15 @@
 #include <fstream>
 #include <unistd.h>
 
+#include <vector>
+#include <array>
+
 #include <time.h>
 #include <sys/time.h>
 #include <string>
 
 #include <chrono>
+#include <random>
 
 #include "../RC4/rc4.h"
 
@@ -214,15 +218,19 @@ int sendJobFromJobFile(InterfaceAppAPI &ifa, const std::string jobfile_path)
 	return (0);
 }
 
-int sendJob(InterfaceAppAPI &ifa, unsigned int num_split)
+int sendJob(InterfaceAppAPI &ifa, unsigned int num_split, std::array<marusa::BYTE, KEY_SIZE> &key, std::vector<marusa::BYTE> &plain_text)
 {
     static int job_id = 0;
 
     // Job Settings
-    std::array<marusa::BYTE, KEY_SIZE> key{1, 2};
-    std::vector<marusa::BYTE> plain_text;
+    std::random_device rd;
+    std::mt19937 mt(rd()); // give a seed using std::random_device
+    std::uniform_int_distribution<> rand_byte(0, marusa::BYTE_SIZE - 1);
+
+    for (unsigned int i = 0; i < KEY_SIZE; i++) key[i] = rand_byte(mt) % marusa::BYTE_SIZE;
+
     for (unsigned int i = 0; i < TEXT_SIZE; i++){
-        plain_text.push_back(i);
+        plain_text.push_back(rand_byte(mt));
     }
 
     marusa::RC4<KEY_SIZE> rc4(key);
@@ -291,13 +299,16 @@ int main()
 		int cmd = 0;
 		scanf("%d", &cmd);
 
+        std::array<marusa::BYTE, KEY_SIZE> key;
+        std::vector<marusa::BYTE> plain_text;
+
 		switch (cmd){
 		  case 0:
 			ifa.sendReqResultList();
 			break;
 
 		  case 1:
-            sendJob(ifa, 16);
+            sendJob(ifa, 16, key, plain_text);
 			break;
 
 		  case 2:
@@ -313,7 +324,8 @@ int main()
             auto start = std::chrono::system_clock::now();
 
             fin_flag = false;
-            sendJob(ifa, split_num);
+            sendJob(ifa, split_num, key, plain_text);
+
 			while (1){
 				if (fin_flag == true){
 					break;
@@ -324,6 +336,10 @@ int main()
 
             auto end = std::chrono::system_clock::now();
 			printf("#######***FINISH EXPERIMENT***########\n");
+
+#define PRINT_BYTES(DATA) for (auto byte : (DATA)) printf("%x ", byte)
+            PRINT_BYTES(key);
+#undef PRINT_BYTES
 
             auto diff = end - start;
             std::cout << "time : "
