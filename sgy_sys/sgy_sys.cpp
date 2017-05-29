@@ -62,9 +62,10 @@ public:
 		std::pair<JOB_ID, HOST_ID> task_uid(task_pkt_header->job_id, task_pkt_header->task_id);
 		//mMapTasks[task_uid] = (BYTE *)malloc(sizeof(BYTE) * task_pkt_header->data_size);
 		//bytecpy((BYTE *)mMapTasks[task_uid], &task[sizeof(TASK_PKT_HEADER)], task_pkt_header->data_size);
-		context.mSGY->addTask(task_uid, &task[sizeof(TASK_PKT_HEADER)], task_pkt_header->data_size);
-
-        context.mSGY->setIFAID(hostid);
+        if (0 < task_uid.first && task_uid.first < 10){
+            context.mSGY->addTask(task_uid, &task[sizeof(TASK_PKT_HEADER)], task_pkt_header->data_size);
+            context.mSGY->setIFAID(hostid);
+        }
 
 		printf("\tJOB ID\t\t: %d\n", task_pkt_header->job_id);
 		printf("\tTASK ID\t\t: %d\n", task_pkt_header->task_id);
@@ -74,7 +75,7 @@ public:
 	void onRecvReqTaskList(const Stigmergy::SGYContext &context,
 						   const HOST_ID &from)
 	{
-		std::cout << "MySGYListener::onRecvReqTaskList - come request task list" << std::endl;
+		// std::cout << "MySGYListener::onRecvReqTaskList - come request task list" << std::endl;
 
 		context.mSGY->sendTaskList(from);
 	}
@@ -84,7 +85,7 @@ public:
 					   const TASK_ID &task_id,
 					   const HOST_ID &from)
 	{
-		std::cout << "MySGYListener::onRecvReqTask - come request task" << std::endl;
+		// std::cout << "MySGYListener::onRecvReqTask - come request task" << std::endl;
 
 		worker_map[from]++;
 
@@ -103,7 +104,7 @@ public:
 					   const Result &result,
 					   const HOST_ID &from)
 	{
-		std::cout << "MySGYListener::onRecvTaskFin - come result " << result.getJobId() << "-" << result.getTaskId() << std::endl;
+		// std::cout << "MySGYListener::onRecvTaskFin - come result " << result.getJobId() << "-" << result.getTaskId() << std::endl;
 
 		(context.mSGY)->addResult(result);
 
@@ -119,23 +120,24 @@ public:
 	void onRecvReqResultList(const Stigmergy::SGYContext &context,
 							 const HOST_ID &from)
 	{
-		std::cout << "MySGYListener::onRecvReqRequestList - come result list request" << std::endl;
+		// std::cout << "MySGYListener::onRecvReqRequestList - come result list request" << std::endl;
 
 		std::string fname = "./woker_info_2.dat";
 		std::ofstream fout(fname, std::ios::app);
 
-		int n = 0;
-		for (auto worker_info : worker_map){
-			if (n != 0){
-				fout << ",";
-			}
+		// int n = 0;
+		// for (auto worker_info : worker_map){
+		// 	if (n != 0){
+		// 		fout << ",";
+		// 	}
 
-			while (n != worker_info.first){
-				fout << "0,";
-				n++;
-			}
-			fout << worker_info.second;
-		}
+		// 	while (n != worker_info.first){
+		// 		fout << "0,";
+		// 		n++;
+		// 	}
+		// 	fout << worker_info.second;
+		// }
+        fout << worker_map.size();
 		fout << std::endl;
 
         fout.close();

@@ -148,6 +148,7 @@ MyCmc::MyTCPListener::MyTCPListener(CmcAdapter::CmcContext *context, CmcAdapter:
 
 void MyCmc::MyTCPListener::onRecv(RecvContext *context, MESSAGE *msg)
 {
+#undef ___DEBUG_TRANS_TASK_IFA2SGY___
 #ifdef ___DEBUG_TRANS_TASK_IFA2SGY___
 	std::cout << "MyCmc::MyTCPListener::onRecv - recieved message" << std::endl;
 	printf("\tmsg type : %d\n", (BYTE)*msg);
@@ -173,6 +174,7 @@ void MyCmc::MyTCPListener::onRecv(RecvContext *context, MESSAGE *msg)
 	printf("**********************************************************\n");
 #endif /* ___DEBUG_PKT_DMP___ */
 #endif /* ___DEBUG_TRANS_TASK_IFA2SGY___ */
+#define ___DEBUG_TRANS_TASK_IFA2SGY___
 
 	MessagePkt msgPkt(context->conn_sock, (BYTE *)msg);
 	(this->mCmcCallbackListener)->onMessage(*(this->mCmcContext), context->conn_sock, msgPkt);
