@@ -76,15 +76,7 @@ public:
 	void onRecvResultList(const InterfaceAppAPI::IFAContext &context,
 						  const std::vector<std::pair<JOB_ID, TASK_ID>> &results_info)
 	{
-		cout << "MyIFAListener::onRecvResultList - result list :" << endl;
 
-		for (auto info : results_info){
-			printf("\tJOB-%d TASK-%d\n", info.first, info.second);
-		}
-
-		if (results_info.size() == NUM_DIV_IMG * NUM_EX_JOB){
-			fin_flag = true;
-		}
 	}
 
     void onRecvTaskFin(const InterfaceAppAPI::IFAContext &context,
@@ -331,7 +323,9 @@ int main()
 					break;
 				}
 
-				usleep(5000);
+                ifa.sendReqResultList();
+
+				usleep(100000);
 			}
 
             auto end = std::chrono::system_clock::now();

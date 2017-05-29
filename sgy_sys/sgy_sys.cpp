@@ -88,13 +88,13 @@ public:
 
 		worker_map[from]++;
 
-		std::string pos = "./worker_info.dat";
-		std::ofstream fout(pos.c_str(), std::ios::out);
-		fout << "***" << std::endl;
-		for (auto worker_info : worker_map){
-			fout << worker_info.first << " - " << worker_info.second << std::endl;
-		}
-		fout << "***" << std::endl;
+		// std::string pos = "./worker_info_1.dat";
+		// std::ofstream fout(pos.c_str(), std::ios::app);
+		// fout << "***" << std::endl;
+		// for (auto worker_info : worker_map){
+		// 	fout << worker_info.first << " - " << worker_info.second << std::endl;
+		// }
+		// fout << "***" << std::endl;
 
 		context.mSGY->sendTask(from, job_id, task_id);
 	}
@@ -121,8 +121,9 @@ public:
 	{
 		std::cout << "MySGYListener::onRecvReqRequestList - come result list request" << std::endl;
 
-		std::string pos = "./woker_info.dat";
-		std::ofstream fout(pos.c_str(), std::ios::app);
+		std::string fname = "./woker_info_2.dat";
+		std::ofstream fout(fname, std::ios::app);
+
 		int n = 0;
 		for (auto worker_info : worker_map){
 			if (n != 0){
@@ -136,6 +137,8 @@ public:
 			fout << worker_info.second;
 		}
 		fout << std::endl;
+
+        fout.close();
 
 		(context.mSGY)->sendResultList(from);
 	}
