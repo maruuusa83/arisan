@@ -109,7 +109,7 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 			cout << ": " << task_info->put_time << endl;
 			*/
 
-            if (0 < task_info->job_id && task_info->job_id < 10){
+            if (0 >= task_info->job_id && task_info->job_id >= 10){
                 continue;
             }
 
