@@ -84,8 +84,12 @@ public:
     {
         BYTE *data;
         unsigned int data_size;
+        static int cnt = 0;
 
         result.getData(&data, data_size);
+
+        cout << "MyIFAListener::onRecvTaskFin - task fin";
+        printf(" %d %d\n", data[0], ++cnt);
 
         if (data[0] == 1){
             cout << "MyIFAListener::onRecvTaskFin - A KEY HAS FOUND !!!";
@@ -242,7 +246,7 @@ int sendJob(InterfaceAppAPI &ifa, unsigned int num_split, std::array<marusa::BYT
         }
 
         for (unsigned int i = 0; i < KEY_SIZE; i++){
-            task_data.from[i] = ((BYTE *)&t_start_position)[KEY_SIZE - i];
+            task_data.from[i] = ((BYTE *)&t_start_position)[i];
         }
         task_data.split_size = (unsigned int)CALC_SPLIT_SIZE(num_split);
         
