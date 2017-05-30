@@ -109,6 +109,10 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
 			cout << ": " << task_info->put_time << endl;
 			*/
 
+            if (0 < task_info->job_id && task_info->job_id < 10){
+                continue;
+            }
+
 			std::pair<JOB_ID, TASK_ID> task_uid(task_info->job_id, task_info->task_id);
 
 			TASK_INFO *info = (TASK_INFO *)malloc(sizeof(TASK_INFO));
