@@ -184,6 +184,18 @@ class MyTPListener : public TaskProcessorAPI::TPCallbackListener
         PRINT_BYTES(obtained_key); printf("\n");
         printf("\n**********\n\n");
 
+        printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+        printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+        printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+        printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+        printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+        printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+        printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+        printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+        printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+
+        exit(1);
+
 	    return (trip_count);
 	}
 };
